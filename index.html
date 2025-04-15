@@ -231,7 +231,7 @@
             <h3>${car.Марка} ${car.Модель}</h3>
             <p>${car.Год}, ${car["Объем"]}л, ${car.Двигатель}, ${car["Привод"]}, ${car["Трансмиссия"]}</p>
             <p><strong>${car["Цена, руб."]} ₽</strong></p>
-            <a class="btn" href="https://t.me/NewTimeAuto_bot?start=${car.ID}" target="_blank">Задать вопрос</a>
+            <a class="btn" href="https://t.me/newtimeauto_sales?text="Здравствуйте! Интересует: " + ${encodeURIComponent(car["Марка"] + " " + car["Модель"])}" target="_blank">Задать вопрос в Telegram</a>
           </div>`;
       });
     }
