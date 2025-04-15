@@ -66,7 +66,7 @@
     .car-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 0.15rem;
+      gap: 0.25rem;
     }
 
     .car {
@@ -109,7 +109,7 @@
 
     .car h3, .car p {
       margin: 0.5rem 0;
-      font-size: 0.9rem;
+      font-size: 0.7rem;
     }
 
     .car .btn {
@@ -204,7 +204,7 @@
               <div class="prev" onclick="changeSlide(${i}, -1)">&#10094;</div>
               <div class="next" onclick="changeSlide(${i}, 1)">&#10095;</div>
             </div>
-            <h3>${car["Цена, руб."]} ₽</h3>
+            <h2>${car["Цена, руб."]} ₽</h2>
             <p>${car.Марка} ${car.Модель} (${car.Год}, ${car["Объем"]}л, ${car.Двигатель}, ${car["Привод"]}, ${car["Трансмиссия"]})</p>
             <a class="btn" href="https://t.me/newtimeauto_sales?text=Здравствуйте! Интересует: ${encodeURIComponent(car["Марка"] + " " + car["Модель"] + " (арт. " + car["ID"] + ")")}" target="_blank">Подробнее</a>
           </div>`;
