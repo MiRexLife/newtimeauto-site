@@ -2,86 +2,97 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>АвтоШоурум</title>
+  <title>NewTime Auto</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
+      font-family: sans-serif;
+      background: #f4f4f4;
       margin: 0;
       padding: 20px;
     }
-    h1 {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    .cars {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
       gap: 20px;
     }
-    .car {
+
+    .car-card {
       background: #fff;
-      padding: 15px;
       border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      padding: 16px;
+      max-width: 300px;
+      width: 100%;
     }
-    .car img {
-      max-width: 100%;
-      height: auto;
-      border-radius: 8px;
+
+    .car-card img {
+      width: 100%;
+      border-radius: 10px;
+      object-fit: cover;
+      height: 180px;
     }
-    .car h3 {
+
+    .car-card h2 {
+      font-size: 20px;
       margin: 10px 0 5px;
     }
-    .car p {
-      margin: 5px 0;
+
+    .car-card p {
+      margin: 4px 0;
     }
-    .btn {
+
+    .car-card a {
       display: inline-block;
       margin-top: 10px;
       padding: 10px 15px;
-      background: #007bff;
-      color: #fff;
+      background-color: #2AABEE;
+      color: white;
       text-decoration: none;
       border-radius: 5px;
+      text-align: center;
     }
   </style>
 </head>
 <body>
-  <h1>Каталог автомобилей</h1>
-  <div class="cars" id="car-list"></div>
+  <h1 style="text-align: center;">Каталог автомобилей</h1>
+  <div class="container" id="car-container">Загрузка...</div>
 
   <script>
-    const SHEET_ID = "1e6MBPZ3vmYdgJRHLwQIw2Ehf7TFSdWycgJ9mYnM0Ahk"; // твоя таблица
-    const API_KEY = "AIzaSyB7BDWOi1pICTSaN1SdUsdTKlgW1g-v_Vc";
-    const RANGE = "Наличие!A1:Z1000";
+    const SHEET_ID = "1e6MBPZ3vmYdgJRHLwQIw2Ehf7TFSdWycgJ9mYnM0Ahk";
+    const SHEET_NAME = "Наличие";
+    const URL = `https://opensheet.elk.sh/${SHEET_ID}/${SHEET_NAME}`;
 
-    fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${RANGE}?key=${API_KEY}`)
+    fetch(URL)
       .then(res => res.json())
       .then(data => {
-        const [headers, ...rows] = data.values;
-        const container = document.getElementById("car-list");
+        const container = document.getElementById("car-container");
+        container.innerHTML = "";
 
-        rows.forEach(row => {
-          const car = Object.fromEntries(headers.map((key, i) => [key, row[i] || ""]));
-
+        data.forEach(car => {
           const card = document.createElement("div");
-          card.className = "car";
+          card.className = "car-card";
+
           card.innerHTML = `
-            <img src="${car["Фото"]}" alt="Фото авто">
-            <h3>${car["Марка"]} ${car["Модель"]}</h3>
-            <p>Описание: ${car["Описание"]}</p>
-            <p>Цена: ${car["Цена, руб."]}</p>
-            <p>Год: ${car["Год"]}</p>
-            <a class="btn" href="https://t.me/newtimeauto_sales?text=Здравствуйте! Интересует ${car["Марка"]} ${car["Модель"]} (арт. ${car["ID"]})" target="_blank">Подробнее</a>
+            <img src="${car.Фото}" alt="${car.Марка} ${car.Модель}">
+            <h2>${car.Марка} ${car.Модель}</h2>
+            <p><strong>Год:</strong> ${car.Год}</p>
+            <p><strong>Объем:</strong> ${car.Объем}</p>
+            <p><strong>Двигатель:</strong> ${car.Двигатель}</p>
+            <p><strong>Привод:</strong> ${car.Привод}</p>
+            <p><strong>Трансмиссия:</strong> ${car.Трансмиссия}</p>
+            <p><strong>Цена:</strong> ${car["Цена, руб."]} ₽</p>
+            <p>${car.Описание}</p>
+            <a href="https://t.me/newtimeauto_sales?text=Здравствуйте! Интересует авто ${car.Марка} ${car.Модель} (${car.ID})" target="_blank">Задать вопрос в Telegram</a>
           `;
+
           container.appendChild(card);
         });
       })
-      .catch(error => {
-        document.getElementById("car-list").innerText = "Ошибка загрузки данных. Проверьте ключ и доступ к таблице.";
-        console.error(error);
+      .catch(err => {
+        document.getElementById("car-container").innerHTML = "Ошибка загрузки данных.";
+        console.error("Ошибка загрузки:", err);
       });
   </script>
 </body>
