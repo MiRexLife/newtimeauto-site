@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Детали авто</title>
+  <style>
+    body {
+      background: #121212;
+      color: white;
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 1rem;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .btn {
+      background: #0099ff;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      text-decoration: none;
+      margin: 0.25rem;
+      display: inline-block;
+    }
+
+    .car-details img {
+      width: 100%;
+      max-height: 300px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+    }
+
+    .car-details h2, .car-details p {
+      margin: 0.5rem 0;
+    }
+
+    .buttons {
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <a href="index.html" class="btn">← Назад</a>
+    <a id="shareBtn" class="btn" target="_blank">🔗 Поделиться</a>
+  </div>
+
+  <div class="car-details" id="carDetails">Загрузка...</div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const carId = params.get('id');
+    const SPREADSHEET_ID = "1e6MBPZ3vmYdgJRHLwQIw2Ehf7TFSdWycgJ9mYnM0Ahk";
+    const API_KEY = "AIzaSyB7BDWOi1pICTSaN1SdUsdTKlgW1g-v_Vc";
+    const RANGE = "Наличие";
+
+    async function loadCar() {
+      const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${RANGE}?key=${API_KEY}`);
+      const { values } = await res.json();
+      const headers = values[0];
+      const rows = values.slice(1).map(row => Object.fromEntries(headers.map((h, i) => [h, row[i]])));
+      const car = rows.find(c => c.ID === carId);
+      if (!car) {
+        document.getElementById('carDetails').innerHTML = "Автомобиль не найден.";
+        return;
+      }
+
+      const images = car.Фото.split(',').map(url => `<img src="${url.trim()}" alt="Фото авто">`).join('');
+      document.getElementById('carDetails').innerHTML = `
+        ${images}
+        <h2>${car.Марка} ${car.Модель}</h2>
+        <p><strong>Год:</strong> ${car.Год}</p>
+        <p><strong>Двигатель:</strong> ${car.Двигатель}, ${car.Объем}л</p>
+        <p><strong>Привод:</strong> ${car.Привод}</p>
+        <p><strong>Трансмиссия:</strong> ${car.Трансмиссия}</p>
+        <p><strong>Цена:</strong> ${car["Цена, руб."]} ₽</p>
+        <p><strong>Описание:</strong><br>${car.Описание || '—'}</p>
+        <div class="buttons">
+          <a class="btn" href="https://t.me/newtimeauto_sales?text=Здравствуйте! Интересует: ${encodeURIComponent(car.Марка + " " + car.Модель + " (арт. " + car.ID + ")")}" target="_blank">Написать</a>
+          <a class="btn" href="tel:+79512310445">Позвонить</a>
+          <a class="btn" href="https://t.me/newtimeauto_sales?text=Хочу забронировать: ${encodeURIComponent(car.Марка + " " + car.Модель + " (арт. " + car.ID + ")")}" target="_blank">Забронировать</a>
+        </div>
+      `;
+
+      document.getElementById('shareBtn').href = `https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent("Смотри авто: " + car.Марка + " " + car.Модель)}`;
+    }
+
+    loadCar();
+  </script>
+</body>
+</html>
