@@ -41,7 +41,7 @@ function loadData() {
 // Функция для создания карточки автомобиля
 function createCarCard(car) {
     const carCard = document.createElement("div");
-    carCard.classList.add("card", "mb-6");
+    carCard.classList.add("card");
 
     carCard.innerHTML = `
         <img src="${car.photo}" alt="${car.brand} ${car.model}">
@@ -79,10 +79,9 @@ function filterCars() {
 
     const filteredCars = cars.filter(car => {
         return (
-            car.brand.toLowerCase().includes(searchInput) ||
-            car.model.toLowerCase().includes(searchInput) ||
-            (yearInput && car.year == yearInput) ||
-            (priceInput && car.price <= priceInput)
+            (searchInput === "" || car.brand.toLowerCase().includes(searchInput) || car.model.toLowerCase().includes(searchInput)) &&
+            (yearInput === "" || car.year == yearInput) &&
+            (priceInput === "" || car.price <= priceInput)
         );
     });
 
@@ -96,3 +95,6 @@ function init() {
 
 // Запуск функции загрузки данных при загрузке страницы
 window.onload = init;
+
+// Добавляем обработчик фильтров
+document.getElementById("filter-btn").addEventListener("click", filterCars);
