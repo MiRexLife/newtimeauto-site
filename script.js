@@ -2,6 +2,8 @@
 const SPREADSHEET_ID = '1e6MBPZ3vmYdgJRHLwQIw2Ehf7TFSdWycgJ9mYnM0Ahk'; // Ваш ID таблицы
 const API_KEY = 'AIzaSyB7BDWOi1pICTSaN1SdUsdTKlgW1g-v_Vc'; // Ваш ключ API для Google
 
+let cars = []; // Массив автомобилей
+
 // Загрузка данных из Google Таблицы
 function loadData() {
     gapi.client.init({
@@ -10,12 +12,13 @@ function loadData() {
     }).then(function () {
         return gapi.client.sheets.spreadsheets.values.get({
             spreadsheetId: SPREADSHEET_ID,
-            range: 'Наличие!A2:J',  // Пример диапазона
+            range: 'Наличие!A2:J',  // Убедитесь, что диапазон правильный
         });
     }).then(function (response) {
         const data = response.result.values;
+        console.log(data); // Добавим консоль для отладки
         if (data && data.length > 0) {
-            const cars = data.map(row => ({
+            cars = data.map(row => ({
                 photo: row[0],
                 brand: row[1],
                 model: row[2],
@@ -26,15 +29,19 @@ function loadData() {
                 price: row[7],
                 description: row[8],
             }));
-            displayCars(cars);
+            displayCars(cars); // Отображаем автомобили
+        } else {
+            console.log('Нет данных в таблице');
         }
+    }).catch(function (error) {
+        console.error('Ошибка загрузки данных из Google Sheets:', error);
     });
 }
 
 // Функция для создания карточки автомобиля
 function createCarCard(car) {
     const carCard = document.createElement("div");
-    carCard.classList.add("card", "mb-6");
+    carCard.classList.add("card");
 
     carCard.innerHTML = `
         <img src="${car.photo}" alt="${car.brand} ${car.model}">
@@ -42,7 +49,7 @@ function createCarCard(car) {
             <h3>${car.brand} ${car.model} (${car.year})</h3>
             <p>${car.description}</p>
             <p class="price">${car.price} руб.</p>
-            <a href="https://t.me/newtimeauto_sales?text=${encodeURIComponent('Здравствуйте, интересует ' + car.brand + ' ' + car.model + ' (арт. ' + car.id + ') ')}" class="button">Задать вопрос в Telegram</a>
+            <a href="https://t.me/newtimeauto_sales?text=${encodeURIComponent('Здравствуйте, интересует ' + car.brand + ' ' + car.model)}" class="button">Задать вопрос в Telegram</a>
         </div>
     `;
 
@@ -53,6 +60,11 @@ function createCarCard(car) {
 function displayCars(carsList) {
     const carsContainer = document.getElementById("cars-container");
     carsContainer.innerHTML = ""; // Очищаем контейнер
+
+    if (carsList.length === 0) {
+        carsContainer.innerHTML = '<p>Нет автомобилей, подходящих по фильтрам.</p>';
+    }
+
     carsList.forEach(car => {
         const carCard = createCarCard(car);
         carsContainer.appendChild(carCard);
@@ -67,15 +79,22 @@ function filterCars() {
 
     const filteredCars = cars.filter(car => {
         return (
-            car.brand.toLowerCase().includes(searchInput) ||
-            car.model.toLowerCase().includes(searchInput) ||
-            (yearInput && car.year == yearInput) ||
-            (priceInput && car.price <= priceInput)
+            (searchInput === "" || car.brand.toLowerCase().includes(searchInput) || car.model.toLowerCase().includes(searchInput)) &&
+            (yearInput === "" || car.year == yearInput) &&
+            (priceInput === "" || car.price <= priceInput)
         );
     });
 
-    displayCars(filteredCars);
+    displayCars(filteredCars); // Обновляем список автомобилей
 }
 
 // Инициализация загрузки данных
-gapi.load("client", loadData);
+function init() {
+    gapi.load("client", loadData);
+}
+
+// Запуск функции загрузки данных при загрузке страницы
+window.onload = init;
+
+// Добавляем обработчик фильтров
+document.getElementById("filter-btn").addEventListener("click", filterCars);
