@@ -192,48 +192,46 @@
       `;
     }
 
-    function renderCars(cars) {
-      const container = document.getElementById("carsContainer");
-      container.innerHTML = "";
-
-      cars.forEach(car => {
-        const card = document.createElement("div");
-        card.className = "car";
-        card.innerHTML = `
-          <img src="${car.Фото.split(',')[0]}" alt="${car.Марка}">
-          <div class="price">${car["Цена, руб."]} ₽</div>
-          <div class="details">(${car.Год}, ${car.Двигатель}, ${car.Привод})</div>
-          <h3>${car.Марка} ${car.Модель}</h3>
-          <a class="btn" href="car.html?id=${car.ID}">Подробнее</a>
-        `;
-        container.appendChild(card);
+    function renderCars(data) {
+      const grid = document.getElementById('carGrid');
+      grid.innerHTML = '';
+      data.forEach((car, i) => {
+        const images = car.Фото.split(',');
+        grid.innerHTML += `
+          <div class="car">
+            <div class="carousel">
+              ${images.map((src, idx) => `<img src="${src.trim()}" class="${idx === 0 ? 'active' : ''}">`).join('')}
+              <div class="prev" onclick="changeSlide(${i}, -1)">&#10094;</div>
+              <div class="next" onclick="changeSlide(${i}, 1)">&#10095;</div>
+            </div>
+            <h3>${car["Цена, руб."]} ₽</h3>
+            <p>${car.Марка} ${car.Модель} (${car.Год}, ${car["Объем"]}л, ${car.Двигатель}, ${car["Привод"]}, ${car["Трансмиссия"]})</p>
+            <a class="btn" href="car.html?id=${car.ID}">Подробнее</a>
+            <a class="btn" href="https://t.me/newtimeauto_sales?text=Здравствуйте! Интересует: ${encodeURIComponent(car["Марка"] + " " + car["Модель"] + " (арт. " + car["ID"] + ")")}" target="_blank">Задать вопрос в Telegram</a>
+          </div>`;
       });
     }
 
-    function applyFilters() {
-      const brand = document.getElementById("brandFilter").value;
-      const drive = document.getElementById("driveFilter").value;
-      const engine = document.getElementById("engineFilter").value;
-      const search = document.getElementById("searchInput").value.toLowerCase();
-
-      const filtered = carsData.filter(car => {
-        return (
-          (!brand || car.Марка === brand) &&
-          (!drive || car.Привод === drive) &&
-          (!engine || car.Двигатель === engine) &&
-          (`${car.Марка} ${car.Модель} ${car.Год}`.toLowerCase().includes(search))
-        );
-      });
-
-      renderCars(filtered);
+    function changeSlide(index, dir) {
+      const car = document.querySelectorAll('.car')[index];
+      const imgs = car.querySelectorAll('img');
+      let current = [...imgs].findIndex(img => img.classList.contains('active'));
+      imgs[current].classList.remove('active');
+      current = (current + dir + imgs.length) % imgs.length;
+      imgs[current].classList.add('active');
     }
 
-    document.getElementById("brandFilter").addEventListener("change", applyFilters);
-    document.getElementById("driveFilter").addEventListener("change", applyFilters);
-    document.getElementById("engineFilter").addEventListener("change", applyFilters);
-    document.getElementById("searchInput").addEventListener("input", applyFilters);
+    async function loadData() {
+      const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${RANGE}?key=${API_KEY}`);
+      const { values } = await res.json();
+      const headers = values[0];
+      cars = values.slice(1).map(row => Object.fromEntries(headers.map((h, i) => [h, row[i]])));
+      cars.forEach(car => car["Цена, руб."] = parseInt(car["Цена, руб."] || '0'));
+      renderFilters();
+      renderCars(cars);
+    }
 
-    fetchData();
+    loadData();
   </script>
 </body>
 </html>
