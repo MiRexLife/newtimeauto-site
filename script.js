@@ -1,75 +1,81 @@
+// Подключение к Google Таблице
+const SPREADSHEET_ID = '1e6MBPZ3vmYdgJRHLwQIw2Ehf7TFSdWycgJ9mYnM0Ahk'; // Ваш ID таблицы
+const API_KEY = 'AIzaSyB7BDWOi1pICTSaN1SdUsdTKlgW1g-v_Vc'; // Ваш ключ API для Google
 
-const spreadsheetId = "1e6MBPZ3vmYdgJRHLwQIw2Ehf7TFSdWycgJ9mYnM0Ahk";
-const sheetName = "Наличие";
-const carList = document.getElementById("carList");
-const brandFilter = document.getElementById("brandFilter");
-const searchInput = document.getElementById("searchInput");
-const sortSelect = document.getElementById("sortSelect");
-
-async function fetchData() {
-  const url = `https://opensheet.elk.sh/${spreadsheetId}/${sheetName}`;
-  const res = await fetch(url);
-  const data = await res.json();
-  return data;
+// Загрузка данных из Google Таблицы
+function loadData() {
+    gapi.client.init({
+        apiKey: API_KEY,
+        discoveryDocs: ["https://sheets.googleapis.com/$discovery/rest?version=v4"],
+    }).then(function () {
+        return gapi.client.sheets.spreadsheets.values.get({
+            spreadsheetId: SPREADSHEET_ID,
+            range: 'Наличие!A2:J',  // Пример диапазона
+        });
+    }).then(function (response) {
+        const data = response.result.values;
+        if (data && data.length > 0) {
+            const cars = data.map(row => ({
+                photo: row[0],
+                brand: row[1],
+                model: row[2],
+                year: row[3],
+                engine: row[4],
+                drive: row[5],
+                transmission: row[6],
+                price: row[7],
+                description: row[8],
+            }));
+            displayCars(cars);
+        }
+    });
 }
 
-function renderCars(cars) {
-  carList.innerHTML = "";
-  cars.forEach((car) => {
-    const card = document.createElement("div");
-    card.className = "car-card";
-    card.innerHTML = `
-      <img src="${car["Фото"]}" alt="${car["Модель"]}" />
-      <h3>${car["Марка"]} ${car["Модель"]}</h3>
-      <p>Цена: ${car["Цена"]} ₽</p>
-      <a href="https://t.me/newtimeauto_sales?text=Здравствуйте! Интересует: ${encodeURIComponent(car["Марка"] + ' ' + car["Модель"])}" target="_blank">
-        <button>📩 Подробнее</button>
-      </a>
+// Функция для создания карточки автомобиля
+function createCarCard(car) {
+    const carCard = document.createElement("div");
+    carCard.classList.add("card", "mb-6");
+
+    carCard.innerHTML = `
+        <img src="${car.photo}" alt="${car.brand} ${car.model}">
+        <div class="card-body">
+            <h3>${car.brand} ${car.model} (${car.year})</h3>
+            <p>${car.description}</p>
+            <p class="price">${car.price} руб.</p>
+            <a href="https://t.me/newtimeauto_sales?text=${encodeURIComponent('Здравствуйте, интересует ' + car.brand + ' ' + car.model)}" class="button">Задать вопрос в Telegram</a>
+        </div>
     `;
-    carList.appendChild(card);
-  });
+
+    return carCard;
 }
 
-function applyFilters(data) {
-  let filtered = data;
-
-  const search = searchInput.value.toLowerCase();
-  if (search) {
-    filtered = filtered.filter((car) =>
-      (car["Марка"] + " " + car["Модель"]).toLowerCase().includes(search)
-    );
-  }
-
-  const brand = brandFilter.value;
-  if (brand) {
-    filtered = filtered.filter((car) => car["Марка"] === brand);
-  }
-
-  const sortValue = sortSelect.value;
-  if (sortValue === "price-asc") {
-    filtered.sort((a, b) => parseInt(a["Цена"]) - parseInt(b["Цена"]));
-  } else if (sortValue === "price-desc") {
-    filtered.sort((a, b) => parseInt(b["Цена"]) - parseInt(a["Цена"]));
-  }
-
-  return filtered;
+// Функция для отображения всех автомобилей
+function displayCars(carsList) {
+    const carsContainer = document.getElementById("cars-container");
+    carsContainer.innerHTML = ""; // Очищаем контейнер
+    carsList.forEach(car => {
+        const carCard = createCarCard(car);
+        carsContainer.appendChild(carCard);
+    });
 }
 
-function populateBrandFilter(data) {
-  const brands = [...new Set(data.map((car) => car["Марка"]))];
-  brands.forEach((brand) => {
-    const option = document.createElement("option");
-    option.value = brand;
-    option.textContent = brand;
-    brandFilter.appendChild(option);
-  });
+// Функция фильтрации автомобилей
+function filterCars() {
+    const searchInput = document.getElementById("search-input").value.toLowerCase();
+    const yearInput = document.getElementById("year-input").value;
+    const priceInput = document.getElementById("price-input").value;
+
+    const filteredCars = cars.filter(car => {
+        return (
+            car.brand.toLowerCase().includes(searchInput) ||
+            car.model.toLowerCase().includes(searchInput) ||
+            (yearInput && car.year == yearInput) ||
+            (priceInput && car.price <= priceInput)
+        );
+    });
+
+    displayCars(filteredCars);
 }
 
-fetchData().then((data) => {
-  populateBrandFilter(data);
-  renderCars(applyFilters(data));
-
-  searchInput.addEventListener("input", () => renderCars(applyFilters(data)));
-  brandFilter.addEventListener("change", () => renderCars(applyFilters(data)));
-  sortSelect.addEventListener("change", () => renderCars(applyFilters(data)));
-});
+// Инициализация загрузки данных
+gapi.load("client", loadData);
