@@ -1,171 +1,255 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Автосалон</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #121212;
-            color: white;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            margin: 0 auto;
-            padding: 20px;
-            max-width: 1200px;
-        }
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .filters, .car-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .filter-group, .car-card {
-            background-color: #1f1f1f;
-            padding: 10px;
-            border-radius: 8px;
-            flex: 1;
-            min-width: 150px;
-        }
-        .car-card img {
-            width: 100%;
-            height: auto;
-            border-radius: 8px;
-        }
-        .car-card h3 {
-            font-size: 18px;
-            margin: 10px 0;
-        }
-        .car-card p {
-            font-size: 14px;
-        }
-        .btn {
-            display: inline-block;
-            padding: 8px 16px;
-            background-color: #FF9F00;
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            margin-top: 10px;
-        }
-        .btn:hover {
-            background-color: #f89c00;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>New Time Auto</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: #121212;
+      color: #fff;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      background-color: #1e1e1e;
+    }
+
+    header img {
+      height: 40px;
+    }
+
+    .icons a {
+      color: white;
+      text-decoration: none;
+      font-size: 24px;
+      margin-left: 1rem;
+    }
+
+    .container {
+      padding: 1rem;
+    }
+
+    h1 {
+      margin-bottom: 0.5rem;
+    }
+
+    .filters-btns, .sort-btns {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin: 1rem 0;
+    }
+
+    .filters-btns button,
+    .sort-btns button {
+      background-color: #2a2a2a;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .filters-panel {
+      display: none;
+      background: #1e1e1e;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+    }
+
+    .car-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1rem;
+    }
+
+    .car {
+      background: #1e1e1e;
+      border-radius: 10px;
+      overflow: hidden;
+      padding: 1rem;
+    }
+
+    .car .carousel {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .car .carousel img {
+      width: 100%;
+      display: none;
+    }
+
+    .car .carousel img.active {
+      display: block;
+    }
+
+    .car .carousel .prev, .car .carousel .next {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0, 0, 0, 0.5);
+      color: white;
+      padding: 0.25rem 0.5rem;
+      cursor: pointer;
+    }
+
+    .car .carousel .prev {
+      left: 10px;
+    }
+
+    .car .carousel .next {
+      right: 10px;
+    }
+
+    .car h3, .car p {
+      margin: 0.5rem 0;
+    }
+
+    .car .btn {
+      background: #0099ff;
+      color: white;
+      padding: 0.5rem;
+      text-align: center;
+      text-decoration: none;
+      display: block;
+      margin-top: 0.5rem;
+      border-radius: 6px;
+    }
+
+    @media (max-width: 600px) {
+      .car-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
+
 <body>
-
-<div class="container">
-    <h1>Автосалон</h1>
-    <div class="filters">
-        <div class="filter-group">
-            <label for="carMake">Марка</label>
-            <select id="carMake">
-                <option value="">Все</option>
-                <option value="BMW">BMW</option>
-                <option value="Porsche">Porsche</option>
-                <!-- Add more options as needed -->
-            </select>
-        </div>
-        <div class="filter-group">
-            <label for="carModel">Модель</label>
-            <select id="carModel">
-                <option value="">Все</option>
-                <!-- Options will be populated dynamically -->
-            </select>
-        </div>
-        <div class="filter-group">
-            <label for="carPrice">Цена</label>
-            <select id="carPrice">
-                <option value="">Все</option>
-                <option value="5000000">От 5,000,000 ₽</option>
-                <option value="10000000">От 10,000,000 ₽</option>
-                <!-- Add more price options as needed -->
-            </select>
-        </div>
-        <div class="filter-group">
-            <button id="resetFilters" class="btn">Сбросить фильтры</button>
-        </div>
+  <header>
+    <img src="logo NT.png" alt="Logo">
+    <div class="icons">
+      <a href="https://t.me/NewTimeAuto_sales" target="_blank">📩</a>
+      <a href="tel:+79512310445">📞</a>
     </div>
-
-    <div class="car-list">
-        <!-- Car items will be dynamically populated here -->
+  </header>
+  <div class="container">
+    <h1>Каталог автомобилей</h1>
+    <button onclick="toggleFilters()">Фильтры</button>
+    <div class="filters-panel" id="filtersPanel"></div>
+    <div class="sort-btns">
+      <button onclick="sortBy('default')">По умолчанию</button>
+      <button onclick="sortBy('priceAsc')">Цена ↑</button>
+      <button onclick="sortBy('priceDesc')">Цена ↓</button>
     </div>
-</div>
+    <div class="car-grid" id="carGrid"></div>
+  </div>
 
-<script>
-    const SPREADSHEET_ID = '1e6MBPZ3vmYdgJRHLwQIw2Ehf7TFSdWycgJ9mYnM0Ahk'; // Google Sheets ID
-    const API_KEY = 'AIzaSyB7BDWOi1pICTSaN1SdUsdTKlgW1g-v_Vc'; // Google API Key
+  <script>
+    const SPREADSHEET_ID = "1e6MBPZ3vmYdgJRHLwQIw2Ehf7TFSdWycgJ9mYnM0Ahk";
+    const API_KEY = "AIzaSyB7BDWOi1pICTSaN1SdUsdTKlgW1g-v_Vc";
+    const RANGE = "Наличие";
+    const filters = {
+      Марка: '',
+      Модель: '',
+      ЦенаОт: 0,
+      ЦенаДо: Infinity
+    };
+    let cars = [];
 
-    let carData = [];
-
-    function fetchCarData() {
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Наличие?key=${API_KEY}`;
-        axios.get(url)
-            .then(response => {
-                carData = response.data.values.slice(1); // Skip header row
-                updateCarList();
-            })
-            .catch(error => console.error('Error fetching data from Google Sheets:', error));
+    function toggleFilters() {
+      document.getElementById('filtersPanel').style.display =
+        document.getElementById('filtersPanel').style.display === 'block' ? 'none' : 'block';
     }
 
-    function updateCarList() {
-        const filteredCars = filterCars();
-        const carList = document.querySelector('.car-list');
-        carList.innerHTML = '';
-
-        filteredCars.forEach(car => {
-            const carCard = document.createElement('div');
-            carCard.classList.add('car-card');
-            carCard.innerHTML = `
-                <img src="${car[0]}" alt="${car[1]} ${car[2]}">
-                <h3>${car[1]} ${car[2]}</h3>
-                <p>${car[3]} | ${car[4]} | ${car[5]} | ${car[6]} | ${car[7]} | ${car[8]}₽</p>
-                <a href="https://t.me/NewTimeAuto_bot?start=${car[9]}" class="btn">Задать вопрос</a>
-            `;
-            carList.appendChild(carCard);
-        });
+    function applyFilters() {
+      const filtered = cars.filter(car => {
+        const price = parseInt(car["Цена, руб."]);
+        return (!filters.Марка || car.Марка === filters.Марка)
+          && (!filters.Модель || car.Модель === filters.Модель)
+          && price >= filters.ЦенаОт
+          && price <= filters.ЦенаДо;
+      });
+      renderCars(filtered);
     }
 
-    function filterCars() {
-        const make = document.getElementById('carMake').value.toLowerCase();
-        const model = document.getElementById('carModel').value.toLowerCase();
-        const price = document.getElementById('carPrice').value;
-
-        return carData.filter(car => {
-            const carMake = car[1].toLowerCase();
-            const carModel = car[2].toLowerCase();
-            const carPrice = parseInt(car[8].replace(/\D/g, ''));
-
-            return (
-                (make === '' || carMake.includes(make)) &&
-                (model === '' || carModel.includes(model)) &&
-                (price === '' || carPrice >= parseInt(price))
-            );
-        });
+    function sortBy(type) {
+      if (type === 'priceAsc') cars.sort((a, b) => a["Цена, руб."] - b["Цена, руб."]);
+      else if (type === 'priceDesc') cars.sort((a, b) => b["Цена, руб."] - a["Цена, руб."]);
+      renderCars(cars);
     }
 
-    document.getElementById('carMake').addEventListener('change', updateCarList);
-    document.getElementById('carModel').addEventListener('change', updateCarList);
-    document.getElementById('carPrice').addEventListener('change', updateCarList);
-    document.getElementById('resetFilters').addEventListener('click', () => {
-        document.getElementById('carMake').value = '';
-        document.getElementById('carModel').value = '';
-        document.getElementById('carPrice').value = '';
-        updateCarList();
-    });
+    function renderFilters() {
+      const panel = document.getElementById('filtersPanel');
+      const brands = [...new Set(cars.map(c => c.Марка))];
+      const models = [...new Set(cars.map(c => c.Модель))];
+      panel.innerHTML = `
+        <label>Марка:<br><select onchange="filters.Марка=this.value;applyFilters()">
+          <option value="">Все</option>
+          ${brands.map(m => `<option value="${m}">${m}</option>`).join('')}
+        </select></label><br>
+        <label>Модель:<br><select onchange="filters.Модель=this.value;applyFilters()">
+          <option value="">Все</option>
+          ${models.map(m => `<option value="${m}">${m}</option>`).join('')}
+        </select></label><br>
+        <label>Цена от:<br><input type="number" onchange="filters.ЦенаОт=+this.value;applyFilters()"></label><br>
+        <label>Цена до:<br><input type="number" onchange="filters.ЦенаДо=+this.value;applyFilters()"></label><br>
+      `;
+    }
 
-    fetchCarData();
-</script>
+    function renderCars(data) {
+      const grid = document.getElementById('carGrid');
+      grid.innerHTML = '';
+      data.forEach((car, i) => {
+        const images = car.Фото.split(',');
+        grid.innerHTML += `
+          <div class="car">
+            <div class="carousel">
+              ${images.map((src, idx) => `<img src="${src.trim()}" class="${idx === 0 ? 'active' : ''}">`).join('')}
+              <div class="prev" onclick="changeSlide(${i}, -1)">&#10094;</div>
+              <div class="next" onclick="changeSlide(${i}, 1)">&#10095;</div>
+            </div>
+            <h3>${car.Марка} ${car.Модель}</h3>
+            <p>${car.Год}, ${car["Объем"]}л, ${car.Двигатель}, ${car["Привод"]}, ${car["Трансмиссия"]}</p>
+            <p><strong>${car["Цена, руб."]} ₽</strong></p>
+            <a class="btn" href="https://t.me/NewTimeAuto_bot?start=${car.ID}" target="_blank">Задать вопрос</a>
+          </div>`;
+      });
+    }
 
+    function changeSlide(index, dir) {
+      const car = document.querySelectorAll('.car')[index];
+      const imgs = car.querySelectorAll('img');
+      let current = [...imgs].findIndex(img => img.classList.contains('active'));
+      imgs[current].classList.remove('active');
+      current = (current + dir + imgs.length) % imgs.length;
+      imgs[current].classList.add('active');
+    }
+
+    async function loadData() {
+      const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${RANGE}?key=${API_KEY}`);
+      const { values } = await res.json();
+      const headers = values[0];
+      cars = values.slice(1).map(row => Object.fromEntries(headers.map((h, i) => [h, row[i]])));
+      cars.forEach(car => car["Цена, руб."] = parseInt(car["Цена, руб."] || '0'));
+      renderFilters();
+      renderCars(cars);
+    }
+
+    loadData();
+  </script>
 </body>
+
 </html>
