@@ -1,171 +1,155 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Автосалон</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #121212;
-            color: white;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            margin: 0 auto;
-            padding: 20px;
-            max-width: 1200px;
-        }
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .filters, .car-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .filter-group, .car-card {
-            background-color: #1f1f1f;
-            padding: 10px;
-            border-radius: 8px;
-            flex: 1;
-            min-width: 150px;
-        }
-        .car-card img {
-            width: 100%;
-            height: auto;
-            border-radius: 8px;
-        }
-        .car-card h3 {
-            font-size: 18px;
-            margin: 10px 0;
-        }
-        .car-card p {
-            font-size: 14px;
-        }
-        .btn {
-            display: inline-block;
-            padding: 8px 16px;
-            background-color: #FF9F00;
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            margin-top: 10px;
-        }
-        .btn:hover {
-            background-color: #f89c00;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>New Time Auto - автомобили со всего мира</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; background: #f5f5f5; color: #333; padding: 1rem; }
+    header { text-align: center; margin-bottom: 1rem; }
+    .filters-btn { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 6px; margin-bottom: 1rem; cursor: pointer; }
+    .modal { display: none; position: fixed; z-index: 10; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); }
+    .modal-content { background: white; margin: 10% auto; padding: 1rem; width: 90%; max-width: 400px; border-radius: 10px; position: relative; }
+    .close-btn { position: absolute; top: 10px; right: 15px; font-size: 1.5rem; cursor: pointer; }
+    .filters label { display: block; margin-top: 10px; }
+    .filters input, .filters select { width: 100%; padding: 8px; margin-top: 5px; border-radius: 4px; border: 1px solid #ccc; }
+    .filters .btns { margin-top: 1rem; display: flex; justify-content: space-between; }
+    .car-card { background: white; padding: 1rem; margin-bottom: 1rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .car-card img { width: 100%; max-height: 200px; object-fit: cover; border-radius: 10px; }
+    .car-details { margin-top: 0.5rem; font-size: 0.9rem; }
+    .car-details b { color: #444; }
+    .tg-btn { display: inline-block; margin-top: 0.8rem; padding: 10px 16px; background: #25a4e1; color: white; border-radius: 6px; text-align: center; text-decoration: none; font-weight: bold; }
+    @media (min-width: 600px) {
+      .car-grid { display: flex; flex-wrap: wrap; gap: 1rem; }
+      .car-card { flex: 1 1 calc(50% - 1rem); }
+    }
+  </style>
 </head>
 <body>
+  <header>
+    <h2>Автомобили в наличии</h2>
+    <button class="filters-btn" onclick="openFilters()">Фильтры</button>
+  </header>
 
-<div class="container">
-    <h1>Автосалон</h1>
-    <div class="filters">
-        <div class="filter-group">
-            <label for="carMake">Марка</label>
-            <select id="carMake">
-                <option value="">Все</option>
-                <option value="BMW">BMW</option>
-                <option value="Porsche">Porsche</option>
-                <!-- Add more options as needed -->
-            </select>
+  <div class="modal" id="filtersModal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeFilters()">&times;</span>
+      <form class="filters" id="filtersForm">
+        <label>Марка:
+          <select id="filterBrand"><option value="">Все</option></select>
+        </label>
+        <label>Модель:
+          <select id="filterModel"><option value="">Все</option></select>
+        </label>
+        <label>Цена от:
+          <input type="number" id="filterPriceMin" placeholder="например, 1000000" />
+        </label>
+        <label>Цена до:
+          <input type="number" id="filterPriceMax" placeholder="например, 3000000" />
+        </label>
+        <div class="btns">
+          <button type="submit">Применить</button>
+          <button type="button" onclick="resetFilters()">Сброс</button>
         </div>
-        <div class="filter-group">
-            <label for="carModel">Модель</label>
-            <select id="carModel">
-                <option value="">Все</option>
-                <!-- Options will be populated dynamically -->
-            </select>
-        </div>
-        <div class="filter-group">
-            <label for="carPrice">Цена</label>
-            <select id="carPrice">
-                <option value="">Все</option>
-                <option value="5000000">От 5,000,000 ₽</option>
-                <option value="10000000">От 10,000,000 ₽</option>
-                <!-- Add more price options as needed -->
-            </select>
-        </div>
-        <div class="filter-group">
-            <button id="resetFilters" class="btn">Сбросить фильтры</button>
-        </div>
+      </form>
     </div>
+  </div>
 
-    <div class="car-list">
-        <!-- Car items will be dynamically populated here -->
-    </div>
-</div>
+  <div class="car-grid" id="carsContainer">Загрузка...</div>
 
-<script>
-    const SPREADSHEET_ID = '1e6MBPZ3vmYdgJRHLwQIw2Ehf7TFSdWycgJ9mYnM0Ahk'; // Google Sheets ID
-    const API_KEY = 'AIzaSyB7BDWOi1pICTSaN1SdUsdTKlgW1g-v_Vc'; // Google API Key
+  <script>
+    const API_KEY = "AIzaSyB7BDWOi1pICTSaN1SdUsdTKlgW1g-v_Vc";
+    const SPREADSHEET_ID = "1e6MBPZ3vmYdgJRHLwQIw2Ehf7TFSdWycgJ9mYnM0Ahk";
+    const RANGE = "Наличие";
 
-    let carData = [];
+    let cars = [];
 
-    function fetchCarData() {
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/Наличие?key=${API_KEY}`;
-        axios.get(url)
-            .then(response => {
-                carData = response.data.values.slice(1); // Skip header row
-                updateCarList();
-            })
-            .catch(error => console.error('Error fetching data from Google Sheets:', error));
+    async function fetchData() {
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${RANGE}?key=${API_KEY}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      const [headers, ...rows] = data.values;
+      cars = rows.map(row => {
+        const obj = {};
+        headers.forEach((key, i) => obj[key] = row[i]);
+        return obj;
+      });
+      populateFilters();
+      displayCars(cars);
     }
 
-    function updateCarList() {
-        const filteredCars = filterCars();
-        const carList = document.querySelector('.car-list');
-        carList.innerHTML = '';
-
-        filteredCars.forEach(car => {
-            const carCard = document.createElement('div');
-            carCard.classList.add('car-card');
-            carCard.innerHTML = `
-                <img src="${car[0]}" alt="${car[1]} ${car[2]}">
-                <h3>${car[1]} ${car[2]}</h3>
-                <p>${car[3]} | ${car[4]} | ${car[5]} | ${car[6]} | ${car[7]} | ${car[8]}₽</p>
-                <a href="https://t.me/NewTimeAuto_bot?start=${car[9]}" class="btn">Задать вопрос</a>
-            `;
-            carList.appendChild(carCard);
-        });
+    function displayCars(data) {
+      const container = document.getElementById("carsContainer");
+      container.innerHTML = "";
+      if (data.length === 0) {
+        container.innerHTML = "<p>Нет подходящих автомобилей.</p>";
+        return;
+      }
+      data.forEach(car => {
+        const div = document.createElement("div");
+        div.className = "car-card";
+        div.innerHTML = `
+          <img src="${car["Фото"]}" alt="${car["Марка"]} ${car["Модель"]}">
+          <div class="car-details">
+            <b>${car["Марка"]} ${car["Модель"]} (${car["Год"]})</b><br>
+            ${car["Объем"]} • ${car["Двигатель"]} • ${car["Привод"]} • ${car["Трансмиссия"]}<br>
+            <b>Цена:</b> ${car["Цена, руб."]} ₽<br>
+            ${car["Описание"] || ""}
+          </div>
+          <a class="tg-btn" href="https://t.me/newtimeauto_sales?text=Здравствуйте! Интересует: ${encodeURIComponent(car["Марка"] + " " + car["Модель"])}" target="_blank">Задать вопрос в Telegram</a>
+        `;
+        container.appendChild(div);
+      });
     }
 
-    function filterCars() {
-        const make = document.getElementById('carMake').value.toLowerCase();
-        const model = document.getElementById('carModel').value.toLowerCase();
-        const price = document.getElementById('carPrice').value;
+    function populateFilters() {
+      const brands = [...new Set(cars.map(car => car["Марка"]).filter(Boolean))];
+      const models = [...new Set(cars.map(car => car["Модель"]).filter(Boolean))];
 
-        return carData.filter(car => {
-            const carMake = car[1].toLowerCase();
-            const carModel = car[2].toLowerCase();
-            const carPrice = parseInt(car[8].replace(/\D/g, ''));
-
-            return (
-                (make === '' || carMake.includes(make)) &&
-                (model === '' || carModel.includes(model)) &&
-                (price === '' || carPrice >= parseInt(price))
-            );
-        });
+      const brandSelect = document.getElementById("filterBrand");
+      const modelSelect = document.getElementById("filterModel");
+      brandSelect.innerHTML = '<option value="">Все</option>' + brands.map(b => `<option value="${b}">${b}</option>`).join('');
+      modelSelect.innerHTML = '<option value="">Все</option>' + models.map(m => `<option value="${m}">${m}</option>`).join('');
     }
 
-    document.getElementById('carMake').addEventListener('change', updateCarList);
-    document.getElementById('carModel').addEventListener('change', updateCarList);
-    document.getElementById('carPrice').addEventListener('change', updateCarList);
-    document.getElementById('resetFilters').addEventListener('click', () => {
-        document.getElementById('carMake').value = '';
-        document.getElementById('carModel').value = '';
-        document.getElementById('carPrice').value = '';
-        updateCarList();
+    function openFilters() {
+      document.getElementById("filtersModal").style.display = "block";
+    }
+
+    function closeFilters() {
+      document.getElementById("filtersModal").style.display = "none";
+    }
+
+    function resetFilters() {
+      document.getElementById("filtersForm").reset();
+      displayCars(cars);
+    }
+
+    document.getElementById("filtersForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const brand = document.getElementById("filterBrand").value;
+      const model = document.getElementById("filterModel").value;
+      const min = parseInt(document.getElementById("filterPriceMin").value);
+      const max = parseInt(document.getElementById("filterPriceMax").value);
+
+      const filtered = cars.filter(car => {
+        const price = parseInt(car["Цена, руб."].replace(/\D/g, ""));
+        return (!brand || car["Марка"] === brand)
+            && (!model || car["Модель"] === model)
+            && (!min || price >= min)
+            && (!max || price <= max);
+      });
+      displayCars(filtered);
+      closeFilters();
     });
 
-    fetchCarData();
-</script>
+    window.onclick = function(event) {
+      const modal = document.getElementById("filtersModal");
+      if (event.target === modal) modal.style.display = "none";
+    }
 
+    fetchData();
+  </script>
 </body>
 </html>
