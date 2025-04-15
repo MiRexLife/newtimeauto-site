@@ -129,10 +129,17 @@
       border-radius: 6px;
     }
 
-    @media (max-width: 600px) {
-      .car-grid {
-        grid-template-columns: 1fr;
+   @media (min-width: 600px) {
+      .cars-grid {
+        grid-template-columns: repeat(2, 1fr);
       }
+    }
+
+    @media (min-width: 1024px) {
+      .cars-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
     }
   </style>
 </head>
