@@ -107,9 +107,16 @@
     .car .carousel .prev { left: 10px; }
     .car .carousel .next { right: 10px; }
 
-    .car h3, .car p {
-      margin: 0.5rem 0;
-      font-size: 0.9rem;
+    .car h3 {
+      margin: 0.5rem 0 0.2rem;
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .car .details {
+      font-size: 0.75rem;
+      color: #aaa;
+      margin-bottom: 0.5rem;
     }
 
     .car .btn {
@@ -205,7 +212,7 @@
               <div class="next" onclick="changeSlide(${i}, 1)">&#10095;</div>
             </div>
             <h3>${car["Цена, руб."]} ₽</h3>
-            <p>${car.Марка} ${car.Модель} (${car.Год}, ${car["Объем"]}л, ${car.Двигатель}, ${car["Привод"]}, ${car["Трансмиссия"]})</p>
+            <div class="details">(${car.Марка} ${car.Модель}, ${car.Год}, ${car["Объем"]}л, ${car.Двигатель}, ${car["Привод"]}, ${car["Трансмиссия"]})</div>
             <a class="btn" href="car.html?id=${car.ID}">Подробнее</a>
             <a class="btn" href="https://t.me/newtimeauto_sales?text=Здравствуйте! Интересует: ${encodeURIComponent(car["Марка"] + " " + car["Модель"] + " (арт. " + car["ID"] + ")")}" target="_blank">Задать вопрос</a>
           </div>`;
