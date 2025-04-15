@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -39,12 +38,7 @@
       padding: 1rem;
     }
 
-    h1 {
-      margin-bottom: 0.5rem;
-    }
-
-    .filters-btns,
-    .sort-btns {
+    .filters-btns, .sort-btns {
       display: flex;
       gap: 0.5rem;
       flex-wrap: wrap;
@@ -71,27 +65,15 @@
 
     .car-grid {
       display: grid;
-      grid-template-columns: 1fr;
-      gap: 1rem;
-    }
-
-    @media (min-width: 300px) {
-      .car-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media (min-width: 1024px) {
-      .car-grid {
-        grid-template-columns: repeat(4, 1fr);
-      }
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 0.5rem;
     }
 
     .car {
       background: #1e1e1e;
-      border-radius: 10px;
+      border-radius: 8px;
       overflow: hidden;
-      padding: 1rem;
+      padding: 0.5rem;
     }
 
     .car .carousel {
@@ -102,6 +84,8 @@
 
     .car .carousel img {
       width: 100%;
+      height: 140px;
+      object-fit: cover;
       display: none;
     }
 
@@ -109,43 +93,38 @@
       display: block;
     }
 
-    .car .carousel .prev,
-    .car .carousel .next {
+    .car .carousel .prev, .car .carousel .next {
       position: absolute;
-      top: 50%;
+      top: 45%;
       transform: translateY(-50%);
       background: rgba(0, 0, 0, 0.5);
       color: white;
-      padding: 0.25rem 0.5rem;
+      padding: 0.2rem 0.4rem;
+      font-size: 18px;
       cursor: pointer;
     }
 
-    .car .carousel .prev {
-      left: 10px;
-    }
+    .car .carousel .prev { left: 10px; }
+    .car .carousel .next { right: 10px; }
 
-    .car .carousel .next {
-      right: 10px;
-    }
-
-    .car h3,
-    .car p {
+    .car h3, .car p {
       margin: 0.5rem 0;
+      font-size: 0.9rem;
     }
 
     .car .btn {
       background: #0099ff;
       color: white;
-      padding: 0.5rem;
+      padding: 0.4rem;
       text-align: center;
       text-decoration: none;
       display: block;
-      margin-top: 0.5rem;
+      margin-top: 0.4rem;
       border-radius: 6px;
+      font-size: 0.85rem;
     }
   </style>
 </head>
-
 <body>
   <header>
     <img src="logo NT.png" alt="Logo">
@@ -170,12 +149,7 @@
     const SPREADSHEET_ID = "1e6MBPZ3vmYdgJRHLwQIw2Ehf7TFSdWycgJ9mYnM0Ahk";
     const API_KEY = "AIzaSyB7BDWOi1pICTSaN1SdUsdTKlgW1g-v_Vc";
     const RANGE = "Наличие";
-    const filters = {
-      Марка: '',
-      Модель: '',
-      ЦенаОт: 0,
-      ЦенаДо: Infinity
-    };
+    const filters = { Марка: '', Модель: '', ЦенаОт: 0, ЦенаДо: Infinity };
     let cars = [];
 
     function toggleFilters() {
@@ -259,5 +233,4 @@
     loadData();
   </script>
 </body>
-
 </html>
