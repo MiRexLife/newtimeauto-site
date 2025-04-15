@@ -42,7 +42,7 @@ function createCarCard(car) {
             <h3>${car.brand} ${car.model} (${car.year})</h3>
             <p>${car.description}</p>
             <p class="price">${car.price} руб.</p>
-            <a href="https://t.me/newtimeauto_sales?text=${encodeURIComponent('Здравствуйте, интересует ' + car.brand + ' ' + car.model)}" class="button">Задать вопрос в Telegram</a>
+            <a href="https://t.me/newtimeauto_sales?text=${encodeURIComponent('Здравствуйте, интересует ' + car.brand + ' ' + car.model + ' (арт. ' + car.id + ') ')}" class="button">Задать вопрос в Telegram</a>
         </div>
     `;
 
