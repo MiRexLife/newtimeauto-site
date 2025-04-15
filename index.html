@@ -43,7 +43,8 @@
       margin-bottom: 0.5rem;
     }
 
-    .filters-btns, .sort-btns {
+    .filters-btns,
+    .sort-btns {
       display: flex;
       gap: 0.5rem;
       flex-wrap: wrap;
@@ -68,24 +69,23 @@
       border-radius: 8px;
     }
 
-.car-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
-}
+    .car-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
 
-@media (min-width: 480px) {
-  .car-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
+    @media (min-width: 480px) {
+      .car-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
 
-@media (min-width: 1024px) {
-  .car-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
+    @media (min-width: 1024px) {
+      .car-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
 
     .car {
       background: #1e1e1e;
@@ -109,7 +109,8 @@
       display: block;
     }
 
-    .car .carousel .prev, .car .carousel .next {
+    .car .carousel .prev,
+    .car .carousel .next {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
@@ -127,7 +128,8 @@
       right: 10px;
     }
 
-    .car h3, .car p {
+    .car h3,
+    .car p {
       margin: 0.5rem 0;
     }
 
@@ -140,8 +142,6 @@
       display: block;
       margin-top: 0.5rem;
       border-radius: 6px;
-    }
-
     }
   </style>
 </head>
@@ -179,8 +179,8 @@
     let cars = [];
 
     function toggleFilters() {
-      document.getElementById('filtersPanel').style.display =
-        document.getElementById('filtersPanel').style.display === 'block' ? 'none' : 'block';
+      const panel = document.getElementById('filtersPanel');
+      panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
     }
 
     function applyFilters() {
