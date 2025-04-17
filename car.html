@@ -72,9 +72,20 @@
 </head>
 <body>
   <div class="top-bar">
-    <a href="javascript:window.history.back();" onclick="if(history.length == 1) { window.location.href = 't.me/newtimeauto_bot/app'; }" class="btn" style="background: transparent; border: 1px solid white;">
+    <a id="aaa" href="javascript:window.history.back();" onclick="if(history.length == 1) { window.location.href = 't.me/newtimeauto_bot/app'; }" class="btn" style="background: transparent; border: 1px solid white;">
       ← Назад
     </a>
+    
+    <p id="demo"></p>
+<script>
+var a = document.getElementsById("aaa").href
+function stups(){
+
+document.getElementById("demo").innerHTML=a
+
+}
+</script>
+    
     <a id="shareBtn" class="btn" style="background: transparent; border: 1px solid white;" target="_blank">
       🔗 Поделиться
     </a>
