@@ -100,8 +100,17 @@
   <div class="car-details" id="carDetails">Загрузка...</div>
 
   <script>
+const tg = window.Telegram.WebApp;
+const startParam = tg.initDataUnsafe?.start_param;
+
+if (startParam && startParam.startsWith('id_')) {
+    const carId = startParam.replace('id_', '');
+    // Подгружаем авто с таким ID
+    loadCarById(carId);
+}
+
     const params = new URLSearchParams(window.location.search);
-    const carId = params.get('id') || params.get('start');
+    const carId = params.get('id') || params.get('startapp');
     const SPREADSHEET_ID = "1e6MBPZ3vmYdgJRHLwQIw2Ehf7TFSdWycgJ9mYnM0Ahk";
     const API_KEY = "AIzaSyB7BDWOi1pICTSaN1SdUsdTKlgW1g-v_Vc";
     const RANGE = "Наличие";
