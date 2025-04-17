@@ -177,7 +177,14 @@
     const RANGE = "Наличие";
     const filters = { Марка: '', Модель: '', ЦенаОт: 0, ЦенаДо: Infinity };
     let cars = [];
+// Чтение параметра startapp
+const tg = window.Telegram.WebApp;
+const startParam = tg.initDataUnsafe?.start_param;
 
+if (startParam?.startsWith("id_")) {
+  const id = startParam.replace("id_", "");
+  window.location.href = `car.html?id=${id}`;
+}
     function toggleFilters() {
       const panel = document.getElementById('filtersPanel');
       panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
