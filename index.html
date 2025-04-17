@@ -42,14 +42,36 @@
       padding: 1rem;
     }
 
-    .filters-btns, .sort-btns {
+    .filters-panel {
+      margin-bottom: 1rem;
+      background: #1e1e1e;
+      padding: 1rem;
+      border-radius: 8px;
+    }
+
+    .filters-panel label {
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .filters-panel select,
+    .filters-panel input {
+      width: 100%;
+      padding: 0.4rem;
+      margin-top: 0.2rem;
+      background: #2a2a2a;
+      border: none;
+      border-radius: 4px;
+      color: #fff;
+    }
+
+    .sort-btns {
       display: flex;
       gap: 0.5rem;
       flex-wrap: wrap;
-      margin: 1rem 0;
+      margin-bottom: 1rem;
     }
 
-    .filters-btns button,
     .sort-btns button {
       background-color: #2a2a2a;
       color: white;
@@ -59,18 +81,10 @@
       cursor: pointer;
     }
 
-    .filters-panel {
-      display: none;
-      background: #1e1e1e;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      border-radius: 8px;
-    }
-
     .car-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 0.5rem;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 0.75rem;
     }
 
     .car {
@@ -78,42 +92,19 @@
       border-radius: 8px;
       overflow: hidden;
       padding: 0.5rem;
-    }
-
-    .car .carousel {
-      position: relative;
-      width: 100%;
-      overflow: hidden;
-    }
-
-    .car .carousel img {
-      width: 100%;
-      height: 140px;
-      object-fit: cover;
-      display: none;
-    }
-
-    .car .carousel img.active {
-      display: block;
-    }
-
-    .car .carousel .prev, .car .carousel .next {
-      position: absolute;
-      top: 45%;
-      transform: translateY(-50%);
-      background: rgba(0, 0, 0, 0.5);
-      color: white;
-      padding: 0.2rem 0.4rem;
-      font-size: 18px;
       cursor: pointer;
     }
 
-    .car .carousel .prev { left: 10px; }
-    .car .carousel .next { right: 10px; }
+    .car img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 6px;
+    }
 
     .car h3 {
       margin: 0.5rem 0 0.2rem;
-      font-size: 1.1rem;
+      font-size: 1rem;
       font-weight: 600;
     }
 
@@ -123,16 +114,59 @@
       color: #aaa;
     }
 
-    .car .btn {
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      backdrop-filter: blur(5px);
+      background: rgba(0, 0, 0, 0.8);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: #1e1e1e;
+      padding: 1rem;
+      border-radius: 10px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+    }
+
+    .modal-content img {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+
+    .modal-content h2 {
+      margin: 0.5rem 0;
+    }
+
+    .modal-content p {
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+
+    .modal-content .btn {
+      display: block;
       background: #0099ff;
       color: white;
-      padding: 0.4rem;
-      text-align: center;
       text-decoration: none;
-      display: block;
-      margin-top: 0.4rem;
+      margin-top: 0.5rem;
+      padding: 0.5rem;
       border-radius: 6px;
-      font-size: 0.85rem;
+    }
+
+    .modal-content .close {
+      margin-top: 1rem;
+      color: #888;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -151,31 +185,32 @@
 
   <div class="container">
     <h1>Каталог автомобилей</h1>
-    <button onclick="toggleFilters()">Фильтры</button>
+
     <div class="filters-panel" id="filtersPanel"></div>
+
     <div class="sort-btns">
       <button onclick="sortBy('default')">По умолчанию</button>
       <button onclick="sortBy('priceAsc')">Цена ↑</button>
       <button onclick="sortBy('priceDesc')">Цена ↓</button>
     </div>
+
     <div class="car-grid" id="carGrid"></div>
+  </div>
+
+  <div class="modal" id="modal">
+    <div class="modal-content" id="modalContent"></div>
   </div>
 
   <script>
     const SPREADSHEET_ID = "1e6MBPZ3vmYdgJRHLwQIw2Ehf7TFSdWycgJ9mYnM0Ahk";
     const API_KEY = "AIzaSyB7BDWOi1pICTSaN1SdUsdTKlgW1g-v_Vc";
     const RANGE = "Наличие";
-    const filters = { Марка: '', Модель: '', ЦенаОт: 0, ЦенаДо: Infinity };
     let cars = [];
-
-    function toggleFilters() {
-      const panel = document.getElementById('filtersPanel');
-      panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
-    }
+    let filters = { Марка: '', Модель: '', ЦенаОт: 0, ЦенаДо: Infinity };
 
     function applyFilters() {
       const filtered = cars.filter(car => {
-        const price = parseInt(car["Цена, руб."]);
+        const price = car["Цена, руб."];
         return (!filters.Марка || car.Марка === filters.Марка)
           && (!filters.Модель || car.Модель === filters.Модель)
           && price >= filters.ЦенаОт
@@ -187,7 +222,8 @@
     function sortBy(type) {
       if (type === 'priceAsc') cars.sort((a, b) => a["Цена, руб."] - b["Цена, руб."]);
       else if (type === 'priceDesc') cars.sort((a, b) => b["Цена, руб."] - a["Цена, руб."]);
-      renderCars(cars);
+      else cars.sort((a, b) => a.ID.localeCompare(b.ID));
+      applyFilters();
     }
 
     function renderFilters() {
@@ -195,46 +231,62 @@
       const brands = [...new Set(cars.map(c => c.Марка))];
       const models = [...new Set(cars.map(c => c.Модель))];
       panel.innerHTML = `
-        <label>Марка:<br><select onchange="filters.Марка=this.value;applyFilters()">
-          <option value="">Все</option>
-          ${brands.map(m => `<option value="${m}">${m}</option>`).join('')}
-        </select></label><br>
-        <label>Модель:<br><select onchange="filters.Модель=this.value;applyFilters()">
-          <option value="">Все</option>
-          ${models.map(m => `<option value="${m}">${m}</option>`).join('')}
-        </select></label><br>
-        <label>Цена от:<br><input type="number" onchange="filters.ЦенаОт=+this.value;applyFilters()"></label><br>
-        <label>Цена до:<br><input type="number" onchange="filters.ЦенаДо=+this.value;applyFilters()"></label><br>
+        <label>Марка:
+          <select onchange="filters.Марка=this.value;applyFilters()">
+            <option value="">Все</option>
+            ${brands.map(b => `<option value="${b}">${b}</option>`).join('')}
+          </select>
+        </label>
+        <label>Модель:
+          <select onchange="filters.Модель=this.value;applyFilters()">
+            <option value="">Все</option>
+            ${models.map(m => `<option value="${m}">${m}</option>`).join('')}
+          </select>
+        </label>
+        <label>Цена от:
+          <input type="number" onchange="filters.ЦенаОт=+this.value||0;applyFilters()">
+        </label>
+        <label>Цена до:
+          <input type="number" onchange="filters.ЦенаДо=+this.value||Infinity;applyFilters()">
+        </label>
       `;
     }
 
     function renderCars(data) {
       const grid = document.getElementById('carGrid');
       grid.innerHTML = '';
-      data.forEach((car, i) => {
-        const images = car.Фото.split(',');
-        grid.innerHTML += `
-          <div class="car">
-            <div class="carousel">
-              ${images.map((src, idx) => `<img src="${src.trim()}" class="${idx === 0 ? 'active' : ''}">`).join('')}
-              <div class="prev" onclick="changeSlide(${i}, -1)">&#10094;</div>
-              <div class="next" onclick="changeSlide(${i}, 1)">&#10095;</div>
-            </div>
-            <h3>${car["Цена, руб."].toLocaleString()} ₽</h3>
-            <p>(${car.Марка} ${car.Модель}, ${car.Год}, ${car["Объем"]}л, ${car.Двигатель}, ${car["Привод"]}, ${car["Трансмиссия"]})</p>
-            <a class="btn" href="car.html?id=${car.ID}">Подробнее</a>
-            <a class="btn" href="https://t.me/newtimeauto_sales?text=Здравствуйте! Интересует: ${encodeURIComponent(car["Марка"] + " " + car["Модель"] + " (арт. " + car["ID"] + ")")}" target="_blank">Задать вопрос</a>
-          </div>`;
+      data.forEach(car => {
+        const img = car.Фото.split(',')[0].trim();
+        const div = document.createElement('div');
+        div.className = 'car';
+        div.innerHTML = `
+          <img src="${img}" alt="">
+          <h3>${car["Цена, руб."].toLocaleString()} ₽</h3>
+          <p>${car.Марка} ${car.Модель}, ${car.Год}</p>
+        `;
+        div.onclick = () => openModal(car);
+        grid.appendChild(div);
       });
     }
 
-    function changeSlide(index, dir) {
-      const car = document.querySelectorAll('.car')[index];
-      const imgs = car.querySelectorAll('img');
-      let current = [...imgs].findIndex(img => img.classList.contains('active'));
-      imgs[current].classList.remove('active');
-      current = (current + dir + imgs.length) % imgs.length;
-      imgs[current].classList.add('active');
+    function openModal(car) {
+      const modal = document.getElementById('modal');
+      const content = document.getElementById('modalContent');
+      const img = car.Фото.split(',')[0].trim();
+      content.innerHTML = `
+        <img src="${img}" alt="">
+        <h2>${car.Марка} ${car.Модель}</h2>
+        <p>${car.Год}, ${car["Объем"]}л, ${car.Двигатель}, ${car["Привод"]}, ${car["Трансмиссия"]}</p>
+        <h3>${car["Цена, руб."].toLocaleString()} ₽</h3>
+        <a class="btn" href="https://t.me/newtimeauto_sales?text=Здравствуйте! Интересует: ${encodeURIComponent(car.Марка + " " + car.Модель + " (арт. " + car.ID + ")")}" target="_blank">Задать вопрос</a>
+        <a class="btn" href="tel:+79512310445">Позвонить</a>
+        <div class="close" onclick="closeModal()">Закрыть</div>
+      `;
+      modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('modal').style.display = 'none';
     }
 
     async function loadData() {
@@ -244,7 +296,7 @@
       cars = values.slice(1).map(row => Object.fromEntries(headers.map((h, i) => [h, row[i]])));
       cars.forEach(car => car["Цена, руб."] = parseInt(car["Цена, руб."] || '0'));
       renderFilters();
-      renderCars(cars);
+      applyFilters();
     }
 
     function checkTelegramStartApp() {
@@ -253,13 +305,13 @@
         const startParam = Telegram.WebApp.initDataUnsafe?.start_param;
         if (startParam && startParam.startsWith("id_")) {
           const id = startParam.replace("id_", "");
-          window.location.href = `car.html?id=${id}`;
+          const car = cars.find(c => c.ID === id);
+          if (car) openModal(car);
         }
       }
     }
 
-    checkTelegramStartApp();
-    loadData();
+    loadData().then(checkTelegramStartApp);
   </script>
 </body>
 </html>
