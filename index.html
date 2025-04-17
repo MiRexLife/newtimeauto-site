@@ -11,122 +11,138 @@
     body {
       margin: 0;
       font-family: 'Inter', sans-serif;
-      background: #f5f5f5;
-      color: #333;
+      background-color: #111;
+      color: #fff;
     }
+
     header {
-      background: #fff;
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      padding: 1rem 2rem;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      align-items: center;
+      padding: 10px 20px;
+      background: #000;
+      border-bottom: 1px solid #333;
     }
+
     header img {
       height: 40px;
     }
+
     .icons a {
-      margin-left: 1rem;
-      color: inherit;
+      margin-left: 15px;
+      color: #fff;
     }
+
     .icons svg {
       width: 24px;
       height: 24px;
-      fill: #333;
+      fill: #fff;
     }
+
     .container {
-      padding: 2rem;
-      max-width: 1200px;
-      margin: auto;
+      padding: 20px;
     }
+
     h1 {
-      margin-bottom: 1rem;
+      margin-top: 0;
+      font-size: 24px;
     }
+
+    button {
+      background: #fff;
+      color: #000;
+      border: none;
+      padding: 8px 16px;
+      margin: 5px 5px 15px 0;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
     .filters-panel {
       display: none;
-      margin-bottom: 1rem;
-      background: #fff;
-      padding: 1rem;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
     }
-    .filters-panel label {
-      display: block;
-      margin-bottom: 0.5rem;
+
+    select, input[type="number"] {
+      margin-bottom: 10px;
+      padding: 5px;
+      width: 100%;
+      max-width: 200px;
     }
-    .sort-btns {
-      margin-bottom: 1rem;
-    }
-    .sort-btns button {
-      margin-right: 0.5rem;
-    }
+
     .car-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 1.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
     }
+
     .car {
-      background: #fff;
+      background: #222;
+      padding: 15px;
+      border-radius: 10px;
+    }
+
+    .car img {
+      width: 100%;
+      max-height: 180px;
+      object-fit: cover;
       border-radius: 8px;
-      padding: 1rem;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+      display: none;
     }
-    .car h3 {
-      margin: 0.5rem 0;
+
+    .car img.active {
+      display: block;
     }
-    .car p {
-      font-size: 0.9rem;
-      color: #555;
-    }
-    .btn {
-      display: inline-block;
-      padding: 0.5rem 1rem;
-      margin-top: 0.5rem;
-      background: #007aff;
-      color: #fff;
-      text-decoration: none;
-      border-radius: 6px;
-      font-weight: 600;
-    }
+
     .carousel {
       position: relative;
-      overflow: hidden;
-      height: 180px;
-      border-radius: 8px;
-      margin-bottom: 1rem;
     }
-    .carousel img {
-      width: 100%;
-      height: 180px;
-      object-fit: cover;
-      position: absolute;
-      top: 0;
-      left: 0;
-      opacity: 0;
-      transition: opacity 0.3s ease-in-out;
-    }
-    .carousel img.active {
-      opacity: 1;
-    }
-    .carousel .prev, .carousel .next {
+
+    .carousel .prev,
+    .carousel .next {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      font-size: 1.5rem;
-      background: rgba(0,0,0,0.4);
       color: #fff;
-      padding: 0.3rem 0.6rem;
-      border-radius: 4px;
+      font-size: 24px;
       cursor: pointer;
+      user-select: none;
+      padding: 0 10px;
     }
+
     .carousel .prev {
-      left: 8px;
+      left: 0;
     }
+
     .carousel .next {
-      right: 8px;
+      right: 0;
+    }
+
+    .btn {
+      display: inline-block;
+      background: #fff;
+      color: #000;
+      text-decoration: none;
+      padding: 8px 12px;
+      margin-top: 10px;
+      margin-right: 10px;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+
+    @media (max-width: 600px) {
+      .car-grid {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 20px;
+      }
+
+      button {
+        padding: 6px 12px;
+        font-size: 14px;
+      }
     }
   </style>
 </head>
@@ -242,7 +258,7 @@
       const headers = values[0];
       cars = values.slice(1).map(row => Object.fromEntries(headers.map((h, i) => [h, row[i]])));
       cars.forEach(car => car["Цена, руб."] = parseInt(car["Цена, руб."] || '0'));
-
+      
       const id = getUrlParam('id');
       if (id) {
         window.location.href = `car.html?id=${id}`;
