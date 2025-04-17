@@ -55,7 +55,7 @@
     }
     .btn.full-width {
       display: flex;
-      width: 95%;
+      width: 90%;
       font-weight: bold;
       background-color: #00cc66;
     }
@@ -123,7 +123,7 @@
         <p><strong>Цена:</strong> ${car["Цена, руб."]} ₽</p>
         <p><strong>Описание:</strong><br>${car.Описание || '—'}</p>
         <div class="buttons">
-          <a class="btn full-width" href="https://t.me/newtimeauto_sales?text=Хочу забронировать: ${encodeURIComponent(car.Марка + " " + car.Модель + " (арт. " + car.ID + ")")}" target="_blank">
+          <a class="bt" href="https://t.me/newtimeauto_sales?text=Хочу забронировать: ${encodeURIComponent(car.Марка + " " + car.Модель + " (арт. " + car.ID + ")")}" target="_blank">
             <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 15h-2v-2h2zm0-4h-2V7h2z"/></svg> Забронировать
           </a>
           <div class="btn-row">
