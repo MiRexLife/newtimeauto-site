@@ -144,6 +144,21 @@
       text-align: center;
     }
 
+    @media (max-width: 768px) {
+      .car-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .car-card {
+        padding: 5px;
+      }
+
+      .btn {
+        font-size: 14px;
+        padding: 8px 10px;
+      }
+    }
+
     @media (max-width: 600px) {
       .car-grid {
         grid-template-columns: 1fr;
