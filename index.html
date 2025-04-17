@@ -42,6 +42,7 @@
       const params = new URLSearchParams(window.location.search);
       const id = params.get("startapp");
       if (id) {
+        // Параметр startapp есть, делаем редирект
         window.location.href = `car.html?id=${id}`;
         return;
       }
@@ -109,7 +110,7 @@
 
     .car-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(1, 1fr);
       gap: 20px;
     }
 
@@ -161,7 +162,7 @@
 
     @media (max-width: 600px) {
       .car-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
       }
 
       .car-card {
