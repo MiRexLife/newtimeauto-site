@@ -72,7 +72,7 @@
 </head>
 <body>
   <div class="top-bar">
-    <a href="https://t.me/newtimeauto_bot/App" class="btn" style="background: transparent; border: 1px solid white;">
+    <a href="index.html" class="btn" style="background: transparent; border: 1px solid white;">
       ← Назад
     </a>
     <a id="shareBtn" class="btn" style="background: transparent; border: 1px solid white;" target="_blank">
@@ -123,7 +123,7 @@
         <p><strong>Цена:</strong> ${car["Цена, руб."]} ₽</p>
         <p><strong>Описание:</strong><br>${car.Описание || '—'}</p>
         <div class="buttons">
-          <a class="bt" href="https://t.me/newtimeauto_sales?text=Хочу забронировать: ${encodeURIComponent(car.Марка + " " + car.Модель + " (арт. " + car.ID + ")")}" target="_blank">
+          <a class="btn" href="https://t.me/newtimeauto_sales?text=Хочу забронировать: ${encodeURIComponent(car.Марка + " " + car.Модель + " (арт. " + car.ID + ")")}" target="_blank">
             <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 15h-2v-2h2zm0-4h-2V7h2z"/></svg> Забронировать
           </a>
           <div class="btn-row">
