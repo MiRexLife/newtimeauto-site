@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Подробности про автомобиль</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <title>Детали авто</title>
   <style>
     body {
       background: #121212;
@@ -29,10 +28,6 @@
       text-decoration: none;
       margin: 0.25rem;
       display: inline-block;
-      max-width: calc(100% - 1rem);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
     }
 
     .car-details img {
@@ -49,9 +44,6 @@
 
     .buttons {
       margin-top: 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
     }
   </style>
 </head>
@@ -65,14 +57,10 @@
 
   <script>
     const params = new URLSearchParams(window.location.search);
-    const carId = params.get('id') || params.get('start');
+    const carId = params.get('id');
     const SPREADSHEET_ID = "1e6MBPZ3vmYdgJRHLwQIw2Ehf7TFSdWycgJ9mYnM0Ahk";
     const API_KEY = "AIzaSyB7BDWOi1pICTSaN1SdUsdTKlgW1g-v_Vc";
     const RANGE = "Наличие";
-
-    if (window.Telegram.WebApp) {
-      Telegram.WebApp.expand();
-    }
 
     async function loadCar() {
       const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${RANGE}?key=${API_KEY}`);
@@ -102,7 +90,7 @@
         </div>
       `;
 
-      document.getElementById('shareBtn').href = `https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent("Смотри что нашёл в каталоге NewTimeAuto: " + car.Марка + " " + car.Модель)}`;
+      document.getElementById('shareBtn').href = `https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent("Смотри что нашёл в каталоге NewTimeAuto " + car.Марка + " " + car.Модель)}`;
     }
 
     loadCar();
