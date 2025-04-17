@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     body {
       margin: 0;
@@ -247,11 +248,13 @@
     }
 
     function checkTelegramStartApp() {
-      const params = new URLSearchParams(window.location.search);
-      const startapp = params.get("startapp");
-      if (startapp && startapp.startsWith("id_")) {
-        const id = startapp.replace("id_", "");
-        window.location.href = `car.html?id=${id}`;
+      if (window.Telegram && Telegram.WebApp) {
+        Telegram.WebApp.ready();
+        const startParam = Telegram.WebApp.initDataUnsafe?.start_param;
+        if (startParam && startParam.startsWith("id_")) {
+          const id = startParam.replace("id_", "");
+          window.location.href = `car.html?id=${id}`;
+        }
       }
     }
 
