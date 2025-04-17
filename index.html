@@ -4,201 +4,67 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>New Time Auto</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Inter', sans-serif;
-      background-color: #111;
-      color: #fff;
-    }
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 20px;
-      background: #000;
-      border-bottom: 1px solid #333;
-    }
-
-    header img {
-      height: 40px;
-    }
-
-    .icons a {
-      margin-left: 15px;
-      color: #fff;
-    }
-
-    .icons svg {
-      width: 24px;
-      height: 24px;
-      fill: #fff;
-    }
-
-    .container {
-      padding: 20px;
-    }
-
-    h1 {
-      margin-top: 0;
-      font-size: 24px;
-    }
-
-    button {
-      background: #fff;
-      color: #000;
-      border: none;
-      padding: 8px 16px;
-      margin: 5px 5px 15px 0;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .filters-panel {
-      display: none;
-      margin-bottom: 20px;
-    }
-
-    select, input[type="number"] {
-      margin-bottom: 10px;
-      padding: 5px;
-      width: 100%;
-      max-width: 200px;
-    }
-
-    .car-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
-    }
-
-    .car {
-      background: #222;
-      padding: 15px;
-      border-radius: 10px;
-    }
-
-    .car img {
-      width: 100%;
-      max-height: 180px;
-      object-fit: cover;
-      border-radius: 8px;
-      display: none;
-    }
-
-    .car img.active {
-      display: block;
-    }
-
-    .carousel {
-      position: relative;
-    }
-
-    .carousel .prev,
-    .carousel .next {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #fff;
-      font-size: 24px;
-      cursor: pointer;
-      user-select: none;
-      padding: 0 10px;
-    }
-
-    .carousel .prev {
-      left: 0;
-    }
-
-    .carousel .next {
-      right: 0;
-    }
-
-    .btn {
-      display: inline-block;
-      background: #fff;
-      color: #000;
-      text-decoration: none;
-      padding: 8px 12px;
-      margin-top: 10px;
-      margin-right: 10px;
-      border-radius: 5px;
-      font-weight: bold;
-    }
-
-    @media (max-width: 600px) {
-      .car-grid {
-        grid-template-columns: 1fr;
-      }
-
-      h1 {
-        font-size: 20px;
-      }
-
-      button {
-        padding: 6px 12px;
-        font-size: 14px;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header>
     <img src="logo NT.png" alt="Logo">
     <div class="icons">
-      <a href="https://t.me/NewTimeAuto_sales" target="_blank" title="Написать в Telegram">
-        <svg viewBox="0 0 24 24"><path d="M9.034 14.791l-.384 5.336c.55 0 .79-.237 1.078-.521l2.582-2.472 5.348 3.896c.98.538 1.678.255 1.946-.906l3.531-16.68c.322-1.497-.542-2.078-1.503-1.719L1.494 9.628c-1.451.566-1.437 1.377-.248 1.748l5.455 1.704L18.472 5.52c.684-.441 1.306-.196.794.283z"/></svg>
-      </a>
-      <a href="tel:+79512310445" title="Позвонить">
-        <svg viewBox="0 0 24 24"><path d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2a1.003 1.003 0 011.01-.24c1.12.37 2.33.57 3.58.57.55 0 1 .45 1 1v3.5c0 .55-.45 1-1 1C10.64 21.01 2.99 13.36 2.99 4c0-.55.45-1 1-1H7.5c.55 0 1 .45 1 1 0 1.25.2 2.46.57 3.58.09.34.03.7-.24 1.01z"/></svg>
-      </a>
+      <a href="https://t.me/NewTimeAuto_sales" target="_blank" title="Написать в Telegram">📩</a>
+      <a href="tel:+79512310445" title="Позвонить">📞</a>
     </div>
   </header>
 
-  <div class="container">
+  <main>
     <h1>Каталог автомобилей</h1>
-    <button onclick="toggleFilters()">Фильтры</button>
-    <div class="filters-panel" id="filtersPanel"></div>
+    <div id="filtersPanel"></div>
     <div class="sort-btns">
       <button onclick="sortBy('default')">По умолчанию</button>
       <button onclick="sortBy('priceAsc')">Цена ↑</button>
       <button onclick="sortBy('priceDesc')">Цена ↓</button>
     </div>
-    <div class="car-grid" id="carGrid"></div>
-  </div>
+    <div id="carGrid" class="car-grid"></div>
+  </main>
 
   <script>
     const SPREADSHEET_ID = "1e6MBPZ3vmYdgJRHLwQIw2Ehf7TFSdWycgJ9mYnM0Ahk";
     const API_KEY = "AIzaSyB7BDWOi1pICTSaN1SdUsdTKlgW1g-v_Vc";
     const RANGE = "Наличие";
-    const filters = { Марка: '', Модель: '', ЦенаОт: 0, ЦенаДо: Infinity };
     let cars = [];
-// Чтение параметра startapp
-const tg = window.Telegram.WebApp;
-const startParam = tg.initDataUnsafe?.start_param;
 
-if (startParam?.startsWith("id_")) {
-  const id = startParam.replace("id_", "");
-  window.location.href = `car.html?id=${id}`;
-}
-    function toggleFilters() {
-      const panel = document.getElementById('filtersPanel');
-      panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+    async function loadData() {
+      const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${RANGE}?key=${API_KEY}`);
+      const { values } = await res.json();
+      const headers = values[0];
+      cars = values.slice(1).map(row => Object.fromEntries(headers.map((h, i) => [h, row[i]])));
+      cars.forEach(car => car["Цена, руб."] = parseInt(car["Цена, руб."] || '0'));
+
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get("startapp");
+      if (id) {
+        window.location.href = `car.html?id=${id}`;
+        return;
+      }
+
+      renderCars(cars);
     }
 
-    function applyFilters() {
-      const filtered = cars.filter(car => {
-        const price = parseInt(car["Цена, руб."]);
-        return (!filters.Марка || car.Марка === filters.Марка)
-          && (!filters.Модель || car.Модель === filters.Модель)
-          && price >= filters.ЦенаОт
-          && price <= filters.ЦенаДо;
+    function renderCars(data) {
+      const grid = document.getElementById("carGrid");
+      grid.innerHTML = '';
+      data.forEach(car => {
+        const photo = car.Фото.split(',')[0];
+        grid.innerHTML += `
+          <div class="car-card">
+            <img src="${photo}" alt="${car.Марка} ${car.Модель}">
+            <div class="car-info">
+              <h3>${car.Марка} ${car.Модель}</h3>
+              <p>${car.Год}, ${car["Объем"]}л, ${car.Двигатель}, ${car["Привод"]}, ${car["Трансмиссия"]}</p>
+              <p><strong>${car["Цена, руб."].toLocaleString()} ₽</strong></p>
+              <a class="btn" href="car.html?id=${car.ID}">Подробнее</a>
+            </div>
+          </div>`;
       });
-      renderCars(filtered);
     }
 
     function sortBy(type) {
@@ -207,76 +73,91 @@ if (startParam?.startsWith("id_")) {
       renderCars(cars);
     }
 
-    function renderFilters() {
-      const panel = document.getElementById('filtersPanel');
-      const brands = [...new Set(cars.map(c => c.Марка))];
-      const models = [...new Set(cars.map(c => c.Модель))];
-      panel.innerHTML = `
-        <label>Марка:<br><select onchange="filters.Марка=this.value;applyFilters()">
-          <option value="">Все</option>
-          ${brands.map(m => `<option value="${m}">${m}</option>`).join('')}
-        </select></label><br>
-        <label>Модель:<br><select onchange="filters.Модель=this.value;applyFilters()">
-          <option value="">Все</option>
-          ${models.map(m => `<option value="${m}">${m}</option>`).join('')}
-        </select></label><br>
-        <label>Цена от:<br><input type="number" onchange="filters.ЦенаОт=+this.value;applyFilters()"></label><br>
-        <label>Цена до:<br><input type="number" onchange="filters.ЦенаДо=+this.value;applyFilters()"></label><br>
-      `;
-    }
-
-    function renderCars(data) {
-      const grid = document.getElementById('carGrid');
-      grid.innerHTML = '';
-      data.forEach((car, i) => {
-        const images = car.Фото.split(',');
-        grid.innerHTML += `
-          <div class="car">
-            <div class="carousel">
-              ${images.map((src, idx) => `<img src="${src.trim()}" class="${idx === 0 ? 'active' : ''}">`).join('')}
-              <div class="prev" onclick="changeSlide(${i}, -1)">&#10094;</div>
-              <div class="next" onclick="changeSlide(${i}, 1)">&#10095;</div>
-            </div>
-            <h3>${car["Цена, руб."].toLocaleString()} ₽</h3>
-            <p>(${car.Марка} ${car.Модель}, ${car.Год}, ${car["Объем"]}л, ${car.Двигатель}, ${car["Привод"]}, ${car["Трансмиссия"]})</p>
-            <a class="btn" href="car.html?id=${car.ID}">Подробнее</a>
-            <a class="btn" href="https://t.me/newtimeauto_sales?text=Здравствуйте! Интересует: ${encodeURIComponent(car["Марка"] + " " + car["Модель"] + " (арт. " + car["ID"] + ")")}" target="_blank">Задать вопрос</a>
-          </div>`;
-      });
-    }
-
-    function changeSlide(index, dir) {
-      const car = document.querySelectorAll('.car')[index];
-      const imgs = car.querySelectorAll('img');
-      let current = [...imgs].findIndex(img => img.classList.contains('active'));
-      imgs[current].classList.remove('active');
-      current = (current + dir + imgs.length) % imgs.length;
-      imgs[current].classList.add('active');
-    }
-
-    function getUrlParam(name) {
-      const url = new URL(window.location.href);
-      return url.searchParams.get(name);
-    }
-
-    async function loadData() {
-      const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${RANGE}?key=${API_KEY}`);
-      const { values } = await res.json();
-      const headers = values[0];
-      cars = values.slice(1).map(row => Object.fromEntries(headers.map((h, i) => [h, row[i]])));
-      cars.forEach(car => car["Цена, руб."] = parseInt(car["Цена, руб."] || '0'));
-      
-      const id = getUrlParam('id');
-      if (id) {
-        window.location.href = `car.html?id=${id}`;
-        return;
-      }
-
-      renderFilters();
-      renderCars(cars);
-    }
-
     loadData();
   </script>
+
+  <style>
+    body {
+      margin: 0;
+      background-color: #111;
+      color: white;
+      font-family: 'Inter', sans-serif;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      background-color: #000;
+    }
+
+    header img {
+      height: 40px;
+    }
+
+    .icons a {
+      margin-left: 15px;
+      color: white;
+      font-size: 1.5em;
+      text-decoration: none;
+    }
+
+    main {
+      padding: 20px;
+    }
+
+    .car-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .car-card {
+      background-color: #222;
+      border-radius: 8px;
+      overflow: hidden;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .car-card img {
+      width: 100%;
+      border-radius: 5px;
+    }
+
+    .car-info {
+      margin-top: 10px;
+    }
+
+    .btn {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 10px 15px;
+      background: #fff;
+      color: #000;
+      text-decoration: none;
+      border-radius: 5px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      .car-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .car-card {
+        padding: 5px;
+      }
+
+      .btn {
+        font-size: 14px;
+        padding: 8px 10px;
+      }
+    }
+  </style>
 </body>
 </html>
