@@ -27,14 +27,6 @@
       padding: 0.75rem 1rem;
       border-radius: 6px;
       text-decoration: none;
-<<<<<<< HEAD
-      margin: 0.25rem;
-      display: inline-block;
-      max-width: calc(100% - 1rem);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-=======
       margin: 0.25rem 0;
       display: inline-flex;
       align-items: center;
@@ -47,7 +39,6 @@
       width: 1em;
       height: 1em;
       fill: white;
->>>>>>> b0e08a9d7bf138ddc5c0cfe8c087a56647638db9
     }
 
     .car-details img {
@@ -80,44 +71,39 @@
       display: flex;
       gap: 0.5rem;
       margin-top: 0.5rem;
+      flex-wrap: wrap;
     }
 
     .btn-row .btn {
-      flex: 1;
+      flex: 1 1 45%;
     }
   </style>
 </head>
 <body>
   <div class="top-bar">
-    <a href="index.html" class="btn">
-      <svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg> Назад
-    </a>
-    <a id="shareBtn" class="btn" target="_blank">
-      <svg viewBox="0 0 24 24"><path d="M18 8a3 3 0 0 0-2.83 2H8.83A3 3 0 0 0 6 8a3 3 0 0 0-2 5.65V15h2v-1.35A3 3 0 0 0 6 8a3 3 0 0 0 2.83 2h6.34A3 3 0 1 0 18 8z"/></svg> Поделиться
-    </a>
-  </div>
+  <a href="index.html" class="btn" style="background: transparent; border: 1px solid white;">
+    ← Назад
+  </a>
+  <a id="shareBtn" class="btn" style="background: transparent; border: 1px solid white;" target="_blank">
+    🔗 Поделиться
+  </a>
+</div>
 
   <div class="car-details" id="carDetails">Загрузка...</div>
 
   <script>
-const tg = window.Telegram.WebApp;
-const startParam = tg.initDataUnsafe?.start_param;
+    const tg = window.Telegram.WebApp;
+    tg.expand?.();
 
-if (startParam && startParam.startsWith('id_')) {
-    const carId = startParam.replace('id_', '');
-    // Подгружаем авто с таким ID
-    loadCarById(carId);
-}
-
+    const startParam = tg.initDataUnsafe?.start_param;
     const params = new URLSearchParams(window.location.search);
-    const carId = params.get('id') || params.get('startapp');
+    const carId = (startParam && startParam.startsWith('id_')) 
+                    ? startParam.replace('id_', '') 
+                    : params.get('id') || params.get('startapp');
+
     const SPREADSHEET_ID = "1e6MBPZ3vmYdgJRHLwQIw2Ehf7TFSdWycgJ9mYnM0Ahk";
     const API_KEY = "AIzaSyB7BDWOi1pICTSaN1SdUsdTKlgW1g-v_Vc";
     const RANGE = "Наличие";
-
-    if (window.Telegram.WebApp) {
-      Telegram.WebApp.expand();
-    }
 
     async function loadCar() {
       const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${RANGE}?key=${API_KEY}`);
@@ -155,7 +141,8 @@ if (startParam && startParam.startsWith('id_')) {
         </div>
       `;
 
-      document.getElementById('shareBtn').href = `https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent("Смотри что нашёл в каталоге NewTimeAuto: " + car.Марка + " " + car.Модель)}`;
+      // Обновляем ссылку на "Поделиться"
+      document.getElementById('shareBtn').href = `https://t.me/newtimeauto_bot/app?startapp=id_${car.ID}`;
     }
 
     loadCar();
