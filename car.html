@@ -142,7 +142,7 @@
       `;
 
       // Обновляем ссылку на "Поделиться"
-      document.getElementById('shareBtn').href = `https://t.me/newtimeauto_bot/app?startapp=id_${car.ID}`;
+      document.getElementById('shareBtn').href = `https://t.me/share/url?url=https://t.me/newtimeauto_bot/app?startapp=id_${car.ID}&text=${encodeURIComponent("Смотри что нашёл в каталоге NewTimeAuto " + car.Марка + " " + car.Модель)}`;
     }
 
     loadCar();
