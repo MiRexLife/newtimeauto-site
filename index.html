@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
@@ -6,12 +6,15 @@
   <title>NewTimeAuto</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
+    /* Общий стиль страницы */
     body {
       margin: 0;
       background: #121212;
       color: #fff;
       font-family: 'Inter', sans-serif;
     }
+
+    /* Шапка */
     header {
       padding: 1rem;
       background: #1f1f1f;
@@ -19,30 +22,36 @@
       justify-content: space-between;
       align-items: center;
     }
+
     .header-left {
       display: flex;
       align-items: center;
       gap: 0.75rem;
     }
+
     .header-left img {
       height: 32px;
     }
+
     .header-links {
       display: flex;
       gap: 1rem;
     }
+
     .header-links a {
       color: white;
       text-decoration: none;
       display: flex;
       align-items: center;
     }
+
     .header-links svg {
       width: 24px;
       height: 24px;
       fill: white;
     }
 
+    /* Кнопки */
     .btn {
       background: #0099ff;
       color: white;
@@ -52,13 +61,16 @@
       cursor: pointer;
       font-weight: bold;
     }
+
+    /* Фильтры поиска */
     .filters {
       padding: 1rem;
-      display: none;
+      display: flex; /* Фильтры теперь всегда видны */
       gap: 0.5rem;
       flex-wrap: wrap;
       background: #1f1f1f;
     }
+
     .filters select, .filters input {
       background: #2c2c2c;
       color: white;
@@ -66,36 +78,44 @@
       padding: 0.5rem;
       border-radius: 6px;
     }
+
+    /* Сетка карточек */
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
       gap: 1rem;
       padding: 1rem;
     }
+
     .card {
       background: #1f1f1f;
       border-radius: 10px;
       overflow: hidden;
       cursor: pointer;
     }
+
     .card img {
       width: 100%;
       height: 120px;
       object-fit: cover;
     }
+
     .card-body {
       padding: 0.5rem;
     }
+
     .card h3 {
       margin: 0.25rem 0;
       font-size: 1rem;
     }
+
     .card p {
       margin: 0;
       font-size: 0.875rem;
       color: #ccc;
     }
 
+    /* Модальное окно */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0;
@@ -107,35 +127,41 @@
       z-index: 1000;
       padding: 1rem;
     }
+
     .modal {
       background-color: #1e1e1e;
       border-radius: 12px;
+      width: 100%;
       max-width: 450px;
-      width: 90%;
       max-height: 90vh;
       overflow-y: auto;
       position: relative;
       animation: fadeIn 0.2s ease-in-out;
       box-shadow: 0 0 20px 5px rgba(255, 255, 255, 0.2);
     }
+
     .modal img {
       width: 100%;
       border-radius: 12px 12px 0 0;
       object-fit: cover;
     }
+
     .modal-content {
       padding: 1rem;
     }
+
     .modal h2 {
       margin: 0 1 0.5rem;
     }
+
     .modal p {
       margin: 0.25rem 0;
       font-size: 0.95rem;
     }
+
     .modal .modal-btn {
       display: block;
-      width: 90%; 
+      width: 90%;
       margin-top: 0.5rem;
       padding: 0.75rem;
       background: #0099ff;
@@ -147,6 +173,7 @@
       text-align: center;
       text-decoration: none;
     }
+
     .modal-close {
       position: absolute;
       top: 0.75rem;
@@ -167,6 +194,7 @@
       .modal-content {
         padding: 0.75rem;
       }
+
       .modal .modal-btn {
         font-size: 0.95rem;
       }
@@ -174,29 +202,36 @@
   </style>
 </head>
 <body>
+  <!-- Шапка сайта -->
   <header>
     <div class="header-left">
       <img src="logo NT.png" alt="logo">
-      
     </div>
     <div class="header-links">
       <a href="tel:+79512310445" title="Позвонить">
         <svg viewBox="0 0 24 24"><path d="M6.62 10.79a15.91 15.91 0 006.59 6.59l2.2-2.2a1 1 0 011.05-.24 11.36 11.36 0 003.56.57 1 1 0 011 1v3.5a1 1 0 01-1 1A17 17 0 013 5a1 1 0 011-1h3.5a1 1 0 011 1 11.36 11.36 0 00.57 3.56 1 1 0 01-.24 1.05l-2.2 2.2z"/></svg>
       </a>
       <a href="https://t.me/newtimeauto_sales" title="Написать в Telegram" target="_blank">
-        <svg viewBox="0 0 24 24"><path d="M9.999 15.199l-.648 4.55c.927 0 1.324-.398 1.82-.878l4.36-4.13 4.99-3.63c.546-.398.241-.62-.378-.41l-6.51 2.34-4.51-1.43c-.977-.31-.98-.974.21-1.45l9.44-3.65c.816-.3 1.52.2 1.26 1.42l-1.62 9.39c-.22 1.19-.89 1.48-1.8.91l-3.66-2.7z"/></svg>
+        <!-- Обновлённая SVG-иконка Telegram -->
+        <svg viewBox="0 0 240 240">
+          <path fill="white" d="M120 0C53.73 0 0 53.73 0 120s53.73 120 120 120 120-53.73 120-120S186.27 0 120 0zm58.52 82.4l-20.34 95.84c-1.53 6.86-5.6 8.57-11.36 5.34l-31.36-23.12-15.12 14.56c-1.67 1.67-3.08 3.08-6.3 3.08l2.27-32.05 58.32-52.57c2.54-2.27-0.55-3.54-3.94-1.27l-72.08 45.33-31.05-9.7c-6.74-2.1-6.86-6.74 1.42-9.98l121.3-46.81c5.62-2.06 10.56 1.27 8.78 9.35z"/>
+        </svg>
       </a>
     </div>
   </header>
-<h1>Каталог автомобилей</h1>
+
+  <!-- Заголовок и фильтры -->
+  <h1>Каталог автомобилей</h1>
   <div class="filters" id="filters">
     <input type="text" id="search" placeholder="Поиск...">
     <select id="brand"><option value="">Марка</option></select>
     <select id="drive"><option value="">Привод</option></select>
   </div>
 
+  <!-- Сетка карточек -->
   <div class="grid" id="grid">Загрузка...</div>
 
+  <!-- JS логика -->
   <script>
     const tg = window.Telegram.WebApp;
     tg.expand?.();
@@ -207,6 +242,7 @@
 
     let cars = [];
 
+    // Загрузка и отображение данных
     async function loadData() {
       const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${RANGE}?key=${API_KEY}`);
       const data = await res.json();
@@ -217,6 +253,7 @@
       applyStartParam();
     }
 
+    // Отображение карточек
     function renderCards(data) {
       const grid = document.getElementById("grid");
       grid.innerHTML = "";
@@ -235,6 +272,7 @@
       });
     }
 
+    // Заполнение фильтров
     function fillFilters(data) {
       const brands = [...new Set(data.map(c => c.Марка))].sort();
       const drives = [...new Set(data.map(c => c.Привод))].sort();
@@ -244,11 +282,7 @@
       drives.forEach(d => driveSelect.innerHTML += `<option>${d}</option>`);
     }
 
-    function toggleFilters() {
-      const f = document.getElementById("filters");
-      f.style.display = f.style.display === "flex" ? "none" : "flex";
-    }
-
+    // Фильтрация
     document.getElementById("search").oninput = filterData;
     document.getElementById("brand").onchange = filterData;
     document.getElementById("drive").onchange = filterData;
@@ -265,6 +299,7 @@
       renderCards(filtered);
     }
 
+    // Модальное окно
     function showModal(car) {
       const modalOverlay = document.createElement("div");
       modalOverlay.className = "modal-overlay";
@@ -289,16 +324,17 @@
         </div>
       `;
       document.body.appendChild(modalOverlay);
-
       modalOverlay.addEventListener("click", (e) => {
         if (e.target === modalOverlay) modalOverlay.remove();
       });
     }
 
+    // Закрытие модалки на Escape
     document.addEventListener("keydown", e => {
       if (e.key === "Escape") document.querySelector(".modal-overlay")?.remove();
     });
 
+    // Открытие модалки по параметру ?startapp=id_001
     function applyStartParam() {
       const startId = tg?.initDataUnsafe?.start_param?.replace("id_", "");
       if (startId) {
