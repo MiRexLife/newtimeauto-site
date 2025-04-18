@@ -2,294 +2,275 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>New Time Auto</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NewTimeAuto</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     body {
       margin: 0;
-      font-family: 'Inter', sans-serif;
-      background-color: #121212;
+      background: #121212;
       color: #fff;
+      font-family: 'Inter', sans-serif;
     }
-
     header {
+      padding: 1rem;
+      background: #1f1f1f;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 1rem;
-      background-color: #1e1e1e;
     }
-
-    header img {
-      height: 40px;
-    }
-
-    .icons a {
-      margin-left: 1rem;
-    }
-
-    .icons svg {
-      width: 24px;
-      height: 24px;
-      fill: white;
-    }
-
-    .container {
-      padding: 1rem;
-    }
-
-    .filters-btns, .sort-btns {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-      margin: 1rem 0;
-    }
-
-    .filters-btns button,
-    .sort-btns button {
-      background-color: #2a2a2a;
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    .filters-panel {
-      display: none;
-      background: #1e1e1e;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      border-radius: 8px;
-    }
-
-    .car-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 0.5rem;
-    }
-
-    .car {
-      background: #1e1e1e;
-      border-radius: 8px;
-      overflow: hidden;
-      padding: 0.5rem;
-    }
-
-    .car img {
-      width: 100%;
-      height: 140px;
-      object-fit: cover;
-    }
-
-    .car h3 {
-      margin: 0.5rem 0 0.2rem;
-      font-size: 1.1rem;
-      font-weight: 600;
-    }
-
-    .car p {
-      margin: 0;
-      font-size: 0.8rem;
-      color: #aaa;
-    }
-
-    .car .btn {
+    .btn {
       background: #0099ff;
       color: white;
-      padding: 0.4rem;
-      text-align: center;
-      text-decoration: none;
-      display: block;
-      margin-top: 0.4rem;
+      padding: 0.5rem 1rem;
+      border: none;
       border-radius: 6px;
-      font-size: 0.85rem;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .filters {
+      padding: 1rem;
+      display: none;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      background: #1f1f1f;
+    }
+    .filters select, .filters input {
+      background: #2c2c2c;
+      color: white;
+      border: none;
+      padding: 0.5rem;
+      border-radius: 6px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 1rem;
+      padding: 1rem;
+    }
+    .card {
+      background: #1f1f1f;
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .card img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+    }
+    .card-body {
+      padding: 0.5rem;
+    }
+    .card h3 {
+      margin: 0.25rem 0;
+      font-size: 1rem;
+    }
+    .card p {
+      margin: 0;
+      font-size: 0.875rem;
+      color: #ccc;
     }
 
-    .modal {
+    /* Модальное окно */
+    .modal-overlay {
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.8);
+      background-color: rgba(0, 0, 0, 0.75);
       display: flex;
       justify-content: center;
       align-items: center;
       z-index: 1000;
       padding: 1rem;
-      box-sizing: border-box;
     }
-
-    .modal-content {
-      background: #1e1e1e;
-      padding: 1rem;
+    .modal {
+      background-color: #1e1e1e;
       border-radius: 12px;
+      max-width: 500px;
       width: 100%;
-      max-width: 400px;
+      max-height: 90vh;
+      overflow-y: auto;
       position: relative;
+      animation: fadeIn 0.2s ease-in-out;
     }
-
-    .modal-content img {
+    .modal img {
       width: 100%;
-      border-radius: 8px;
-      margin-bottom: 1rem;
+      border-radius: 12px 12px 0 0;
+      object-fit: cover;
     }
-
-    .modal-content .share {
+    .modal-content {
+      padding: 1rem;
+    }
+    .modal h2 {
+      margin: 0 0 0.5rem;
+    }
+    .modal p {
+      margin: 0.25rem 0;
+      font-size: 0.95rem;
+    }
+    .modal .modal-btn {
+      display: block;
+      width: 100%;
+      margin-top: 0.5rem;
+      padding: 0.75rem;
+      background: #0099ff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 1rem;
+      text-align: center;
+      text-decoration: none;
+    }
+    .modal-close {
       position: absolute;
-      top: 10px;
-      right: 10px;
+      top: 0.75rem;
+      right: 1rem;
+      font-size: 1.5rem;
       background: none;
       border: none;
+      color: white;
       cursor: pointer;
     }
 
-    .modal-content .share svg {
-      width: 20px;
-      height: 20px;
-      fill: white;
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
     }
 
-    .modal-content .btns a {
-      display: block;
-      margin-top: 0.5rem;
-      text-align: center;
+    @media (max-width: 600px) {
+      .modal-content {
+        padding: 0.75rem;
+      }
+      .modal .modal-btn {
+        font-size: 0.95rem;
+      }
     }
   </style>
 </head>
 <body>
   <header>
-    <img src="logo NT.png" alt="Logo">
-    <div class="icons">
-      <a href="https://t.me/NewTimeAuto_sales" target="_blank" title="Написать в Telegram">
-        <svg viewBox="0 0 24 24"><path d="M9.034 14.791l-.384 5.336c.55 0 .79-.237 1.078-.521l2.582-2.472 5.348 3.896c.98.538 1.678.255 1.946-.906l3.531-16.68c.322-1.497-.542-2.078-1.503-1.719L1.494 9.628c-1.451.566-1.437 1.377-.248 1.748l5.455 1.704L18.472 5.52c.684-.441 1.306-.196.794.283z"/></svg>
-      </a>
-      <a href="tel:+79512310445" title="Позвонить">
-        <svg viewBox="0 0 24 24"><path d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2a1.003 1.003 0 011.01-.24c1.12.37 2.33.57 3.58.57.55 0 1 .45 1 1v3.5c0 .55-.45 1-1 1C10.64 21.01 2.99 13.36 2.99 4c0-.55.45-1 1-1H7.5c.55 0 1 .45 1 1 0 1.25.2 2.46.57 3.58.09.34.03.7-.24 1.01z"/></svg>
-      </a>
-    </div>
+    <h1>Каталог</h1>
+    <button class="btn" onclick="toggleFilters()">Фильтр</button>
   </header>
 
-  <div class="container">
-    <h1>Каталог автомобилей</h1>
-    <button onclick="toggleFilters()">Фильтры</button>
-    <div class="filters-panel" id="filtersPanel"></div>
-    <div class="sort-btns">
-      <button onclick="sortBy('default')">По умолчанию</button>
-      <button onclick="sortBy('priceAsc')">Цена ↑</button>
-      <button onclick="sortBy('priceDesc')">Цена ↓</button>
-    </div>
-    <div class="car-grid" id="carGrid"></div>
+  <div class="filters" id="filters">
+    <input type="text" id="search" placeholder="Поиск...">
+    <select id="brand"><option value="">Марка</option></select>
+    <select id="drive"><option value="">Привод</option></select>
   </div>
 
-  <div class="modal" id="carModal" style="display:none">
-    <div class="modal-content" id="modalContent"></div>
-  </div>
+  <div class="grid" id="grid">Загрузка...</div>
 
   <script>
-    const SPREADSHEET_ID = "1e6MBPZ3vmYdgJRHLwQIw2Ehf7TFSdWycgJ9mYnM0Ahk";
+    const tg = window.Telegram.WebApp;
+    tg.expand?.();
+
     const API_KEY = "AIzaSyB7BDWOi1pICTSaN1SdUsdTKlgW1g-v_Vc";
+    const SPREADSHEET_ID = "1e6MBPZ3vmYdgJRHLwQIw2Ehf7TFSdWycgJ9mYnM0Ahk";
     const RANGE = "Наличие";
-    const filters = { Марка: '', Модель: '', ЦенаОт: 0, ЦенаДо: Infinity };
+
     let cars = [];
-
-    function toggleFilters() {
-      const panel = document.getElementById('filtersPanel');
-      panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
-    }
-
-    function applyFilters() {
-      const filtered = cars.filter(car => {
-        const price = parseInt(car["Цена, руб."]);
-        return (!filters.Марка || car.Марка === filters.Марка)
-          && (!filters.Модель || car.Модель === filters.Модель)
-          && price >= filters.ЦенаОт
-          && price <= filters.ЦенаДо;
-      });
-      renderCars(filtered);
-    }
-
-    function sortBy(type) {
-      if (type === 'priceAsc') cars.sort((a, b) => a["Цена, руб."] - b["Цена, руб."]);
-      else if (type === 'priceDesc') cars.sort((a, b) => b["Цена, руб."] - a["Цена, руб."]);
-      renderCars(cars);
-    }
-
-    function renderFilters() {
-      const panel = document.getElementById('filtersPanel');
-      const brands = [...new Set(cars.map(c => c.Марка))];
-      const models = [...new Set(cars.map(c => c.Модель))];
-      panel.innerHTML = `
-        <label>Марка:<br><select onchange="filters.Марка=this.value;applyFilters()">
-          <option value="">Все</option>
-          ${brands.map(m => `<option value="${m}">${m}</option>`).join('')}
-        </select></label><br>
-        <label>Модель:<br><select onchange="filters.Модель=this.value;applyFilters()">
-          <option value="">Все</option>
-          ${models.map(m => `<option value="${m}">${m}</option>`).join('')}
-        </select></label><br>
-        <label>Цена от:<br><input type="number" onchange="filters.ЦенаОт=+this.value;applyFilters()"></label><br>
-        <label>Цена до:<br><input type="number" onchange="filters.ЦенаДо=+this.value;applyFilters()"></label><br>
-      `;
-    }
-
-    function renderCars(data) {
-      const grid = document.getElementById('carGrid');
-      grid.innerHTML = '';
-      data.forEach((car, i) => {
-        const img = car.Фото.split(',')[0];
-        grid.innerHTML += `
-          <div class="car" onclick="showCarModal(${i})">
-            <img src="${img}" alt="car">
-            <h3>${car["Цена, руб."].toLocaleString()} ₽</h3>
-            <p>${car.Марка} ${car.Модель} (${car.Год})</p>
-          </div>`;
-      });
-    }
-
-    function showCarModal(index) {
-      const car = cars[index];
-      const img = car.Фото.split(',')[0];
-      const modal = document.getElementById('carModal');
-      const content = document.getElementById('modalContent');
-      content.innerHTML = `
-        <button class="share" onclick="shareCar('${car.ID}')">
-          <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7a3.018 3.018 0 000-1.39l7.02-4.11a2.992 2.992 0 10-.93-1.63L8 9.91a3 3 0 100 4.18l7.11 4.17a2.994 2.994 0 001.89-.18c.56-.33.99-.83 1.26-1.41z"/></svg>
-        </button>
-        <img src="${img}" alt="${car.Марка}">
-        <h3>${car.Марка} ${car.Модель}</h3>
-        <p>${car.Год} • ${car["Объем"]}л • ${car.Двигатель} • ${car["Привод"]} • ${car["Трансмиссия"]}</p>
-        <p style="margin:1rem 0">${car.Описание || ''}</p>
-        <div class="btns">
-          <a class="btn" href="https://t.me/NewTimeAuto_sales?text=Здравствуйте! Интересует: ${encodeURIComponent(car.Марка + " " + car.Модель + " (арт. " + car.ID + ") https://t.me/newtimeauto_bot/app?startapp=id_" + car.ID)}" target="_blank">Задать вопрос</a>
-          <a class="btn" href="tel:+79512310445">Позвонить</a>
-          <a class="btn" href="https://t.me/newtimeauto_bot/app?startapp=id_${car.ID}" target="_blank">Забронировать</a>
-        </div>
-      `;
-      modal.style.display = 'flex';
-    }
-
-    function shareCar(id) {
-      const url = `https://t.me/newtimeauto_bot/app?startapp=id_${id}`;
-      navigator.clipboard.writeText(url);
-      alert("Ссылка скопирована в буфер обмена");
-    }
-
-    document.getElementById('carModal').addEventListener('click', e => {
-      if (e.target.id === 'carModal') e.target.style.display = 'none';
-    });
 
     async function loadData() {
       const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${RANGE}?key=${API_KEY}`);
-      const { values } = await res.json();
-      const headers = values[0];
-      cars = values.slice(1).map(row => Object.fromEntries(headers.map((h, i) => [h, row[i]])));
-      cars.forEach(car => car["Цена, руб."] = parseInt(car["Цена, руб."] || '0'));
-      renderFilters();
-      renderCars(cars);
+      const data = await res.json();
+      const headers = data.values[0];
+      cars = data.values.slice(1).map(row => Object.fromEntries(headers.map((h, i) => [h, row[i]])));
+      renderCards(cars);
+      fillFilters(cars);
+      applyStartParam();
+    }
+
+    function renderCards(data) {
+      const grid = document.getElementById("grid");
+      grid.innerHTML = "";
+      data.forEach(car => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.onclick = () => showModal(car);
+        card.innerHTML = `
+          <img src="${car.Фото?.split(',')[0]}" alt="car">
+          <div class="card-body">
+            <h3>${car.Марка} ${car.Модель}</h3>
+            <p>${car.Год} • ${car["Цена, руб."]} ₽</p>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function fillFilters(data) {
+      const brands = [...new Set(data.map(c => c.Марка))].sort();
+      const drives = [...new Set(data.map(c => c.Привод))].sort();
+      const brandSelect = document.getElementById("brand");
+      const driveSelect = document.getElementById("drive");
+      brands.forEach(b => brandSelect.innerHTML += `<option>${b}</option>`);
+      drives.forEach(d => driveSelect.innerHTML += `<option>${d}</option>`);
+    }
+
+    function toggleFilters() {
+      const f = document.getElementById("filters");
+      f.style.display = f.style.display === "flex" ? "none" : "flex";
+    }
+
+    document.getElementById("search").oninput = filterData;
+    document.getElementById("brand").onchange = filterData;
+    document.getElementById("drive").onchange = filterData;
+
+    function filterData() {
+      const query = document.getElementById("search").value.toLowerCase();
+      const brand = document.getElementById("brand").value;
+      const drive = document.getElementById("drive").value;
+      const filtered = cars.filter(car =>
+        (!brand || car.Марка === brand) &&
+        (!drive || car.Привод === drive) &&
+        (car.Марка + car.Модель + car.Год).toLowerCase().includes(query)
+      );
+      renderCards(filtered);
+    }
+
+    function showModal(car) {
+      const modalOverlay = document.createElement("div");
+      modalOverlay.className = "modal-overlay";
+      modalOverlay.innerHTML = `
+        <div class="modal" role="dialog">
+          <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">&times;</button>
+          <img src="${car.Фото?.split(',')[0]}" alt="car">
+          <div class="modal-content">
+            <h2>${car.Марка} ${car.Модель}</h2>
+            <p><strong>Год:</strong> ${car.Год}</p>
+            <p><strong>Двигатель:</strong> ${car.Двигатель}, ${car.Объем} л</p>
+            <p><strong>Привод:</strong> ${car.Привод}</p>
+            <p><strong>Трансмиссия:</strong> ${car.Трансмиссия}</p>
+            <p><strong>Цена:</strong> ${car["Цена, руб."]} ₽</p>
+            <p>${car.Описание || 'Без описания'}</p>
+            <a class="modal-btn" href="https://t.me/newtimeauto_sales?text=Хочу забронировать: ${encodeURIComponent(car.Марка + ' ' + car.Модель + ' (арт. ' + car.ID + ')')}" target="_blank">Забронировать</a>
+            <a class="modal-btn" href="tel:+79512310445">Позвонить</a>
+            <a class="modal-btn" href="https://t.me/share/url?url=${encodeURIComponent('https://t.me/newtimeauto_bot/app?startapp=id_' + car.ID)}&text=${encodeURIComponent('Смотри, что нашёл в каталоге NewTimeAuto: ' + car.Марка + ' ' + car.Модель)}" target="_blank">Поделиться</a>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modalOverlay);
+
+      // Закрытие по клику вне модального окна
+      modalOverlay.addEventListener("click", (e) => {
+        if (e.target === modalOverlay) modalOverlay.remove();
+      });
+    }
+
+    // Закрытие по Escape
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape") document.querySelector(".modal-overlay")?.remove();
+    });
+
+    function applyStartParam() {
+      const startId = tg?.initDataUnsafe?.start_param?.replace("id_", "");
+      if (startId) {
+        const found = cars.find(c => c.ID === startId);
+        if (found) showModal(found);
+      }
     }
 
     loadData();
