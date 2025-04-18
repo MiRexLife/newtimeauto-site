@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
@@ -19,6 +19,30 @@
       justify-content: space-between;
       align-items: center;
     }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .header-left img {
+      height: 32px;
+    }
+    .header-links {
+      display: flex;
+      gap: 1rem;
+    }
+    .header-links a {
+      color: white;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+    }
+    .header-links svg {
+      width: 24px;
+      height: 24px;
+      fill: white;
+    }
+
     .btn {
       background: #0099ff;
       color: white;
@@ -72,7 +96,6 @@
       color: #ccc;
     }
 
-    /* Модальное окно */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0;
@@ -87,12 +110,13 @@
     .modal {
       background-color: #1e1e1e;
       border-radius: 12px;
-      max-width: 500px;
-      width: 100%;
+      max-width: 450px;
+      width: 90%;
       max-height: 90vh;
       overflow-y: auto;
       position: relative;
       animation: fadeIn 0.2s ease-in-out;
+      box-shadow: 0 0 20px 5px rgba(255, 255, 255, 0.2);
     }
     .modal img {
       width: 100%;
@@ -111,7 +135,7 @@
     }
     .modal .modal-btn {
       display: block;
-      width: 100%;
+      width: 90%; 
       margin-top: 0.5rem;
       padding: 0.75rem;
       background: #0099ff;
@@ -151,8 +175,18 @@
 </head>
 <body>
   <header>
-    <h1>Каталог</h1>
-    <button class="btn" onclick="toggleFilters()">Фильтр</button>
+    <div class="header-left">
+      <img src="logo NT.png" alt="logo">
+      <h1>Каталог автомобилей</h1>
+    </div>
+    <div class="header-links">
+      <a href="tel:+79512310445" title="Позвонить">
+        <svg viewBox="0 0 24 24"><path d="M6.62 10.79a15.91 15.91 0 006.59 6.59l2.2-2.2a1 1 0 011.05-.24 11.36 11.36 0 003.56.57 1 1 0 011 1v3.5a1 1 0 01-1 1A17 17 0 013 5a1 1 0 011-1h3.5a1 1 0 011 1 11.36 11.36 0 00.57 3.56 1 1 0 01-.24 1.05l-2.2 2.2z"/></svg>
+      </a>
+      <a href="https://t.me/newtimeauto_sales" title="Написать в Telegram" target="_blank">
+        <svg viewBox="0 0 24 24"><path d="M9.999 15.199l-.648 4.55c.927 0 1.324-.398 1.82-.878l4.36-4.13 4.99-3.63c.546-.398.241-.62-.378-.41l-6.51 2.34-4.51-1.43c-.977-.31-.98-.974.21-1.45l9.44-3.65c.816-.3 1.52.2 1.26 1.42l-1.62 9.39c-.22 1.19-.89 1.48-1.8.91l-3.66-2.7z"/></svg>
+      </a>
+    </div>
   </header>
 
   <div class="filters" id="filters">
@@ -193,8 +227,8 @@
         card.innerHTML = `
           <img src="${car.Фото?.split(',')[0]}" alt="car">
           <div class="card-body">
-            <h3>${car.Марка} ${car.Модель}</h3>
-            <p>${car.Год} • ${car["Цена, руб."]} ₽</p>
+            <h3>${car["Цена, руб."]} ₽</h3>
+            <p>${car.Марка} ${car.Модель} • ${car.Год}</p>
           </div>
         `;
         grid.appendChild(card);
@@ -239,28 +273,28 @@
           <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">&times;</button>
           <img src="${car.Фото?.split(',')[0]}" alt="car">
           <div class="modal-content">
-            <h2>${car.Марка} ${car.Модель}</h2>
+            <p><strong>В наличии</p>
+            <h2><strong>Цена:</strong> ${car["Цена, руб."]} ₽</h2>
+            <p>${car.Марка} ${car.Модель}</p>
+            <a class="modal-btn" href="https://t.me/newtimeauto_sales?text=${encodeURIComponent('Хочу забронировать: ' + car.Марка + ' ' + car.Модель + ' (арт. ' + car.ID + ')')}" target="_blank">Забронировать</a>
+            <a class="modal-btn" href="tel:+79512310445">Позвонить</a>
+            <a class="modal-btn" href="https://t.me/share/url?url=${encodeURIComponent('https://t.me/newtimeauto_bot/app?startapp=id_' + car.ID)}&text=${encodeURIComponent('Смотри, что нашёл в каталоге NewTimeAuto: ' + car.Марка + ' ' + car.Модель)}" target="_blank">Поделиться</a>
+            <h2>Характеристики</h2>
             <p><strong>Год:</strong> ${car.Год}</p>
             <p><strong>Двигатель:</strong> ${car.Двигатель}, ${car.Объем} л</p>
             <p><strong>Привод:</strong> ${car.Привод}</p>
             <p><strong>Трансмиссия:</strong> ${car.Трансмиссия}</p>
-            <p><strong>Цена:</strong> ${car["Цена, руб."]} ₽</p>
             <p>${car.Описание || 'Без описания'}</p>
-            <a class="modal-btn" href="https://t.me/newtimeauto_sales?text=Хочу забронировать: ${encodeURIComponent(car.Марка + ' ' + car.Модель + ' (арт. ' + car.ID + ')')}" target="_blank">Забронировать</a>
-            <a class="modal-btn" href="tel:+79512310445">Позвонить</a>
-            <a class="modal-btn" href="https://t.me/share/url?url=${encodeURIComponent('https://t.me/newtimeauto_bot/app?startapp=id_' + car.ID)}&text=${encodeURIComponent('Смотри, что нашёл в каталоге NewTimeAuto: ' + car.Марка + ' ' + car.Модель)}" target="_blank">Поделиться</a>
           </div>
         </div>
       `;
       document.body.appendChild(modalOverlay);
 
-      // Закрытие по клику вне модального окна
       modalOverlay.addEventListener("click", (e) => {
         if (e.target === modalOverlay) modalOverlay.remove();
       });
     }
 
-    // Закрытие по Escape
     document.addEventListener("keydown", e => {
       if (e.key === "Escape") document.querySelector(".modal-overlay")?.remove();
     });
