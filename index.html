@@ -13,29 +13,11 @@
       font-family: 'Inter', sans-serif;
     }
     header {
+      padding: 1rem;
+      background: #1f1f1f;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 1rem;
-      background-color: #1e1e1e;
-    }
-
-    header img {
-      height: 40px;
-    }
-
-    .icons a {
-      margin-left: 1rem;
-    }
-
-    .icons svg {
-      width: 24px;
-      height: 24px;
-      fill: white;
-    }
-
-    .container {
-      padding: 1rem;
     }
     .btn {
       background: #0099ff;
@@ -94,14 +76,13 @@
     .modal-overlay {
       position: fixed;
       top: 0; left: 0;
-      width: 90%; height: 100%;
+      width: 100%; height: 100%;
       background-color: rgba(0, 0, 0, 0.75);
       display: flex;
       justify-content: center;
       align-items: center;
       z-index: 1000;
       padding: 1rem;
-      
     }
     .modal {
       background-color: #1e1e1e;
@@ -112,10 +93,6 @@
       overflow-y: auto;
       position: relative;
       animation: fadeIn 0.2s ease-in-out;
-      -webkit-box-shadow: 0px 5px 27px 16px rgba(255, 255, 255, 0.36);
-      -moz-box-shadow: 0px 5px 27px 16px rgba(255, 255, 255, 0.36);
-      box-shadow: 0px 5px 27px 16px rgba(255, 255, 255, 0.36);
-      /* box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px; */
     }
     .modal img {
       width: 100%;
@@ -134,7 +111,7 @@
     }
     .modal .modal-btn {
       display: block;
-      width: 90%;
+      width: 100%;
       margin-top: 0.5rem;
       padding: 0.75rem;
       background: #0099ff;
@@ -174,29 +151,18 @@
 </head>
 <body>
   <header>
-    <img src="logo NT.png" alt="Logo">
-    <div class="icons">
-      <a href="https://t.me/NewTimeAuto_sales" target="_blank" title="Написать в Telegram">
-        <svg viewBox="0 0 24 24"><path d="M9.034 14.791l-.384 5.336c.55 0 .79-.237 1.078-.521l2.582-2.472 5.348 3.896c.98.538 1.678.255 1.946-.906l3.531-16.68c.322-1.497-.542-2.078-1.503-1.719L1.494 9.628c-1.451.566-1.437 1.377-.248 1.748l5.455 1.704L18.472 5.52c.684-.441 1.306-.196.794.283z"/></svg>
-      </a>
-      <a href="tel:+79512310445" title="Позвонить">
-        <svg viewBox="0 0 24 24"><path d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2a1.003 1.003 0 011.01-.24c1.12.37 2.33.57 3.58.57.55 0 1 .45 1 1v3.5c0 .55-.45 1-1 1C10.64 21.01 2.99 13.36 2.99 4c0-.55.45-1 1-1H7.5c.55 0 1 .45 1 1 0 1.25.2 2.46.57 3.58.09.34.03.7-.24 1.01z"/></svg>
-      </a>
-    </div>
+    <h1>Каталог</h1>
+    <button class="btn" onclick="toggleFilters()">Фильтр</button>
   </header>
 
-  <div class="container">
-    <h1>Каталог автомобилей</h1>
-    <button onclick="toggleFilters()">Фильтры</button>
-    <div class="filters-panel" id="filtersPanel"></div>
-    <div class="sort-btns">
-      <button onclick="sortBy('default')">По умолчанию</button>
-      <button onclick="sortBy('priceAsc')">Цена ↑</button>
-      <button onclick="sortBy('priceDesc')">Цена ↓</button>
-    </div>
-    <div class="car-grid" id="carGrid"></div>
+  <div class="filters" id="filters">
+    <input type="text" id="search" placeholder="Поиск...">
+    <select id="brand"><option value="">Марка</option></select>
+    <select id="drive"><option value="">Привод</option></select>
   </div>
+
   <div class="grid" id="grid">Загрузка...</div>
+
   <script>
     const tg = window.Telegram.WebApp;
     tg.expand?.();
@@ -208,26 +174,14 @@
     let cars = [];
 
     async function loadData() {
-  try {
-    const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${RANGE}?key=${API_KEY}`);
-    const data = await res.json();
-    console.log("Fetched data:", data);
-
-    if (!data.values || data.values.length < 2) {
-      document.getElementById("grid").innerText = "Нет данных.";
-      return;
+      const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${RANGE}?key=${API_KEY}`);
+      const data = await res.json();
+      const headers = data.values[0];
+      cars = data.values.slice(1).map(row => Object.fromEntries(headers.map((h, i) => [h, row[i]])));
+      renderCards(cars);
+      fillFilters(cars);
+      applyStartParam();
     }
-
-    const headers = data.values[0];
-    cars = data.values.slice(1).map(row => Object.fromEntries(headers.map((h, i) => [h, row[i]])));
-    renderCards(cars);
-    fillFilters(cars);
-    applyStartParam();
-  } catch (err) {
-    console.error("Ошибка загрузки данных:", err);
-    document.getElementById("grid").innerText = "Ошибка загрузки данных.";
-  }
-}
 
     function renderCards(data) {
       const grid = document.getElementById("grid");
@@ -239,8 +193,8 @@
         card.innerHTML = `
           <img src="${car.Фото?.split(',')[0]}" alt="car">
           <div class="card-body">
-            <h3>${car["Цена, руб."]} ₽</h3>
-            <p>${car.Марка} ${car.Модель} • ${car.Год}</p>
+            <h3>${car.Марка} ${car.Модель}</h3>
+            <p>${car.Год} • ${car["Цена, руб."]} ₽</p>
           </div>
         `;
         grid.appendChild(card);
@@ -285,19 +239,17 @@
           <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">&times;</button>
           <img src="${car.Фото?.split(',')[0]}" alt="car">
           <div class="modal-content">
-            <p><strong>В наличии</strong></p>
-            <h2><strong>Цена:</strong> ${car["Цена, руб."]} ₽</h2>
-            <h3>${car.Марка} ${car.Модель}</h3>
-            <a class="modal-btn" href="https://t.me/newtimeauto_sales?text=${encodeURIComponent('Хочу забронировать: ' + car.Марка + ' ' + car.Модель + ' (арт. ' + car.ID + ')')}" target="_blank">Забронировать</a>
-            <a class="modal-btn" href="tel:+79512310445">Позвонить</a>
-            <a class="modal-btn" href="https://t.me/share/url?url=${encodeURIComponent('https://t.me/newtimeauto_bot/app?startapp=id_' + car.ID)}&text=${encodeURIComponent('Смотри, что нашёл в каталоге NewTimeAuto: ' + car.Марка + ' ' + car.Модель)}" target="_blank">Поделиться</a>
-            <h3>Характеристики</h3>
+            <h2>${car.Марка} ${car.Модель}</h2>
             <p><strong>Год:</strong> ${car.Год}</p>
             <p><strong>Двигатель:</strong> ${car.Двигатель}, ${car.Объем} л</p>
             <p><strong>Привод:</strong> ${car.Привод}</p>
             <p><strong>Трансмиссия:</strong> ${car.Трансмиссия}</p>
+            <p><strong>Цена:</strong> ${car["Цена, руб."]} ₽</p>
             <p>${car.Описание || 'Без описания'}</p>
-            </div>
+            <a class="modal-btn" href="https://t.me/newtimeauto_sales?text=Хочу забронировать: ${encodeURIComponent(car.Марка + ' ' + car.Модель + ' (арт. ' + car.ID + ')')}" target="_blank">Забронировать</a>
+            <a class="modal-btn" href="tel:+79512310445">Позвонить</a>
+            <a class="modal-btn" href="https://t.me/share/url?url=${encodeURIComponent('https://t.me/newtimeauto_bot/app?startapp=id_' + car.ID)}&text=${encodeURIComponent('Смотри, что нашёл в каталоге NewTimeAuto: ' + car.Марка + ' ' + car.Модель)}" target="_blank">Поделиться</a>
+          </div>
         </div>
       `;
       document.body.appendChild(modalOverlay);
