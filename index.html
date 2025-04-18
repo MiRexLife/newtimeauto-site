@@ -76,7 +76,7 @@
     .modal-overlay {
       position: fixed;
       top: 0; left: 0;
-      width: 100%; height: 100%;
+      width: 90%; height: 100%;
       background-color: rgba(0, 0, 0, 0.75);
       display: flex;
       justify-content: center;
@@ -111,7 +111,7 @@
     }
     .modal .modal-btn {
       display: block;
-      width: 100%;
+      width: 90%;
       margin-top: 0.5rem;
       padding: 0.75rem;
       background: #0099ff;
@@ -239,17 +239,19 @@
           <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">&times;</button>
           <img src="${car.Фото?.split(',')[0]}" alt="car">
           <div class="modal-content">
-            <h2>${car.Марка} ${car.Модель}</h2>
+            <p><strong>В наличии</strong></p>
+            <h2><strong>Цена:</strong> ${car["Цена, руб."]} ₽</h2>
+            <h3>${car.Марка} ${car.Модель}</h3>
+            <a class="modal-btn" href="https://t.me/newtimeauto_sales?text=Хочу забронировать: ${encodeURIComponent(car.Марка + ' ' + car.Модель + ' (арт. ' + car.ID + ')')}" target="_blank">Забронировать</a>
+            <a class="modal-btn" href="tel:+79512310445">Позвонить</a>
+            <a class="modal-btn" href="https://t.me/share/url?url=${encodeURIComponent('https://t.me/newtimeauto_bot/app?startapp=id_' + car.ID)}&text=${encodeURIComponent('Смотри, что нашёл в каталоге NewTimeAuto: ' + car.Марка + ' ' + car.Модель)}" target="_blank">Поделиться</a>
+            <h3>Характеристики</h3>
             <p><strong>Год:</strong> ${car.Год}</p>
             <p><strong>Двигатель:</strong> ${car.Двигатель}, ${car.Объем} л</p>
             <p><strong>Привод:</strong> ${car.Привод}</p>
             <p><strong>Трансмиссия:</strong> ${car.Трансмиссия}</p>
-            <p><strong>Цена:</strong> ${car["Цена, руб."]} ₽</p>
             <p>${car.Описание || 'Без описания'}</p>
-            <a class="modal-btn" href="https://t.me/newtimeauto_sales?text=Хочу забронировать: ${encodeURIComponent(car.Марка + ' ' + car.Модель + ' (арт. ' + car.ID + ')')}" target="_blank">Забронировать</a>
-            <a class="modal-btn" href="tel:+79512310445">Позвонить</a>
-            <a class="modal-btn" href="https://t.me/share/url?url=${encodeURIComponent('https://t.me/newtimeauto_bot/app?startapp=id_' + car.ID)}&text=${encodeURIComponent('Смотри, что нашёл в каталоге NewTimeAuto: ' + car.Марка + ' ' + car.Модель)}" target="_blank">Поделиться</a>
-          </div>
+            </div>
         </div>
       `;
       document.body.appendChild(modalOverlay);
