@@ -156,14 +156,25 @@
 </head>
 <body>
   <header>
-    <h1>Каталог</h1>
-    <button class="btn" onclick="toggleFilters()">Фильтр</button>
+    <header>
+    <img src="logo NT.png" alt="Logo">
+    <div class="icons">
+      <a href="https://t.me/NewTimeAuto_sales" target="_blank" title="Написать в Telegram">
+        <svg viewBox="0 0 24 24"><path d="M9.034 14.791l-.384 5.336c.55 0 .79-.237 1.078-.521l2.582-2.472 5.348 3.896c.98.538 1.678.255 1.946-.906l3.531-16.68c.322-1.497-.542-2.078-1.503-1.719L1.494 9.628c-1.451.566-1.437 1.377-.248 1.748l5.455 1.704L18.472 5.52c.684-.441 1.306-.196.794.283z"/></svg>
+      </a>
+      <a href="tel:+79512310445" title="Позвонить">
+        <svg viewBox="0 0 24 24"><path d="M6.62 10.79a15.053 15.053 0 006.59 6.59l2.2-2.2a1.003 1.003 0 011.01-.24c1.12.37 2.33.57 3.58.57.55 0 1 .45 1 1v3.5c0 .55-.45 1-1 1C10.64 21.01 2.99 13.36 2.99 4c0-.55.45-1 1-1H7.5c.55 0 1 .45 1 1 0 1.25.2 2.46.57 3.58.09.34.03.7-.24 1.01z"/></svg>
+      </a>
+    </div>
   </header>
+   <h1>Каталог автомобилей</h1>
+    <button class="btn" onclick="toggleFilters()">Фильтр</button>
+ 
 
   <div class="filters" id="filters">
     <input type="text" id="search" placeholder="Поиск...">
-    <select id="brand"><option value="">Марка</option></select>
-    <select id="drive"><option value="">Привод</option></select>
+   // <select id="brand"><option value="">Марка</option></select>
+   // <select id="drive"><option value="">Привод</option></select>
   </div>
 
   <div class="grid" id="grid">Загрузка...</div>
