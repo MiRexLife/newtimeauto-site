@@ -2,147 +2,264 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Подробнее про автомобиль</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>NewTimeAuto</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     body {
-      background: #121212;
-      color: white;
-      font-family: 'Inter', sans-serif;
       margin: 0;
-      padding: 1rem;
+      background: #121212;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
     }
-    .top-bar {
+    header {
+      padding: 1rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1rem;
+      background: #1f1f1f;
+    }
+    h1 {
+      margin: 0;
+      font-size: 1.2rem;
     }
     .btn {
       background: #0099ff;
       color: white;
-      padding: 0.75rem 1rem;
+      padding: 0.5rem 1rem;
+      border: none;
       border-radius: 6px;
-      text-decoration: none;
-      margin: 0.25rem 0;
-      display: inline-flex;
-      align-items: center;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .filters {
+      padding: 1rem;
+      display: none;
+      flex-wrap: wrap;
       gap: 0.5rem;
-      font-size: 1rem;
-      justify-content: center;
+      background: #1f1f1f;
     }
-    .btn svg {
-      width: 1em;
-      height: 1em;
-      fill: white;
+    .filters select, .filters input {
+      background: #2c2c2c;
+      color: white;
+      border: none;
+      padding: 0.5rem;
+      border-radius: 6px;
     }
-    .car-details img {
-      width: 100%;
-      max-height: 300px;
-      object-fit: cover;
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 1rem;
+      padding: 1rem;
+    }
+    .card {
+      background: #1f1f1f;
       border-radius: 10px;
-      margin-bottom: 1rem;
-    }
-    .car-details h2, .car-details p {
-      margin: 0.5rem 0;
-    }
-    .buttons {
-      margin-top: 1rem;
+      overflow: hidden;
+      cursor: pointer;
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
     }
-    .btn.full-width {
+    .card img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+    }
+    .card-body {
+      padding: 0.5rem;
+    }
+    .card h3 {
+      margin: 0.25rem 0;
+      font-size: 1rem;
+    }
+    .card p {
+      margin: 0;
+      font-size: 0.875rem;
+      color: #ccc;
+    }
+
+    /* Модальное окно */
+    .modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.8);
       display: flex;
-      width: 90%;
-      font-weight: bold;
-      background-color: #00cc66;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+      z-index: 1000;
     }
-    .btn-row {
-      display: flex;
-      gap: 0.5rem;
-      margin-top: 0.5rem;
-      flex-wrap: wrap;
+    .modal-content {
+      background: #1e1e1e;
+      color: white;
+      border-radius: 12px;
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 1rem;
+      position: relative;
     }
-    .btn-row .btn {
-      flex: 1 1 45%;
+    .modal-content img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+    .modal-close {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      font-size: 1.5rem;
+      color: white;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    .modal .btn {
+      display: block;
+      width: 100%;
+      margin: 0.25rem 0;
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      .modal-content {
+        padding: 0.75rem;
+      }
+      .modal-close {
+        font-size: 1.25rem;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="top-bar">
-    <a onclick="if(history.length > 1) {history.back()} else {window.location='https://t.me/newtimeauto_bot/app';}" class="btn" style="background: transparent; border: 1px solid white;">
-      ← Назад
-    </a>
-    <a id="shareBtn" class="btn" style="background: transparent; border: 1px solid white;" target="_blank">
-      🔗 Поделиться
-    </a>
+  <header>
+    <h1>Каталог</h1>
+    <button class="btn" onclick="toggleFilters()">Фильтр</button>
+  </header>
+
+  <div class="filters" id="filters">
+    <input type="text" id="search" placeholder="Поиск...">
+    <select id="brand"><option value="">Марка</option></select>
+    <select id="drive"><option value="">Привод</option></select>
   </div>
 
-  <div class="car-details" id="carDetails">Загрузка...</div>
+  <div class="grid" id="grid">Загрузка...</div>
 
   <script>
     const tg = window.Telegram.WebApp;
     tg.expand?.();
 
-    const params = new URLSearchParams(window.location.search);
-
-    // Получаем carId: приоритет - из Telegram, затем из URL
-    let carId = tg?.initDataUnsafe?.start_param;
-    if (!carId) {
-      carId = params.get('id') || params.get('startapp');
-    }
-    if (carId?.startsWith("id_")) {
-      carId = carId.replace("id_", "");
-    }
-
-    const SPREADSHEET_ID = "1e6MBPZ3vmYdgJRHLwQIw2Ehf7TFSdWycgJ9mYnM0Ahk";
     const API_KEY = "AIzaSyB7BDWOi1pICTSaN1SdUsdTKlgW1g-v_Vc";
+    const SPREADSHEET_ID = "1e6MBPZ3vmYdgJRHLwQIw2Ehf7TFSdWycgJ9mYnM0Ahk";
     const RANGE = "Наличие";
 
-    async function loadCar() {
+    let cars = [];
+
+    async function loadData() {
       const res = await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${RANGE}?key=${API_KEY}`);
-      const { values } = await res.json();
-      const headers = values[0];
-      const rows = values.slice(1).map(row => Object.fromEntries(headers.map((h, i) => [h, row[i]])));
-      const car = rows.find(c => c.ID === carId);
-      if (!car) {
-        document.getElementById('carDetails').innerHTML = "Автомобиль не найден.";
-        return;
-      }
-
-      const images = car.Фото.split(',').map(url => `<img src="${url.trim()}" alt="Фото авто">`).join('');
-      document.getElementById('carDetails').innerHTML = `
-        ${images}
-        <h2>${car.Марка} ${car.Модель}</h2>
-        <p><strong>Год:</strong> ${car.Год}</p>
-        <p><strong>Двигатель:</strong> ${car.Двигатель}, ${car.Объем}л</p>
-        <p><strong>Привод:</strong> ${car.Привод}</p>
-        <p><strong>Трансмиссия:</strong> ${car.Трансмиссия}</p>
-        <p><strong>Цена:</strong> ${car["Цена, руб."]} ₽</p>
-        <p><strong>Описание:</strong><br>${car.Описание || '—'}</p>
-        <div class="buttons">
-          <a class="btn" href="https://t.me/newtimeauto_sales?text=Хочу забронировать: ${encodeURIComponent(car.Марка + " " + car.Модель + " (арт. " + car.ID + ")")}" target="_blank">
-            <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 15h-2v-2h2zm0-4h-2V7h2z"/></svg> Забронировать
-          </a>
-          <div class="btn-row">
-            <a class="btn" href="https://t.me/newtimeauto_sales?text=Здравствуйте! Интересует: ${encodeURIComponent(car.Марка + " " + car.Модель + " (арт. " + car.ID + ")")}" target="_blank">
-              <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg> Написать
-            </a>
-            <a class="btn" href="tel:+79512310445">
-              <svg viewBox="0 0 24 24"><path d="M6.62 10.79a15.91 15.91 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1-.27 11.36 11.36 0 0 0 3.58.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.25a1 1 0 0 1 1 1 11.36 11.36 0 0 0 .57 3.58 1 1 0 0 1-.27 1z"/></svg> Позвонить
-            </a>
-          </div>
-        </div>
-      `;
-
-      // Обновляем ссылку на "Поделиться"
-      document.getElementById('shareBtn').href = 
-        `https://t.me/share/url?url=${encodeURIComponent(`https://t.me/newtimeauto_bot/app?startapp=id_${carId}`)}&text=${encodeURIComponent("Смотри, что нашёл в каталоге NewTimeAuto: " + car.Марка + " " + car.Модель)}`;
+      const data = await res.json();
+      const headers = data.values[0];
+      cars = data.values.slice(1).map(row => Object.fromEntries(headers.map((h, i) => [h, row[i]])));
+      renderCards(cars);
+      fillFilters(cars);
+      applyStartParam();
     }
 
-    loadCar();
+    function renderCards(data) {
+      const grid = document.getElementById("grid");
+      grid.innerHTML = "";
+      data.forEach(car => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.onclick = () => showModal(car);
+        card.innerHTML = `
+          <img src="${car.Фото?.split(',')[0]}" alt="car">
+          <div class="card-body">
+            <h3>${car.Марка} ${car.Модель}</h3>
+            <p>${car.Год} • ${car["Цена, руб."]} ₽</p>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function fillFilters(data) {
+      const brands = [...new Set(data.map(c => c.Марка))].sort();
+      const drives = [...new Set(data.map(c => c.Привод))].sort();
+      const brandSelect = document.getElementById("brand");
+      const driveSelect = document.getElementById("drive");
+
+      brands.forEach(b => brandSelect.innerHTML += `<option>${b}</option>`);
+      drives.forEach(d => driveSelect.innerHTML += `<option>${d}</option>`);
+    }
+
+    function toggleFilters() {
+      const f = document.getElementById("filters");
+      f.style.display = f.style.display === "flex" ? "none" : "flex";
+    }
+
+    document.getElementById("search").oninput = filterData;
+    document.getElementById("brand").onchange = filterData;
+    document.getElementById("drive").onchange = filterData;
+
+    function filterData() {
+      const query = document.getElementById("search").value.toLowerCase();
+      const brand = document.getElementById("brand").value;
+      const drive = document.getElementById("drive").value;
+      const filtered = cars.filter(car =>
+        (!brand || car.Марка === brand) &&
+        (!drive || car.Привод === drive) &&
+        (car.Марка + car.Модель + car.Год).toLowerCase().includes(query)
+      );
+      renderCards(filtered);
+    }
+
+    function showModal(car) {
+      const modal = document.createElement("div");
+      modal.className = "modal";
+      modal.innerHTML = `
+        <div class="modal-content">
+          <button class="modal-close" onclick="this.closest('.modal').remove()">&times;</button>
+          <img src="${car.Фото?.split(',')[0]}" alt="car">
+          <h2>${car.Марка} ${car.Модель}</h2>
+          <p><strong>Год:</strong> ${car.Год}</p>
+          <p><strong>Двигатель:</strong> ${car.Двигатель}, ${car.Объем}л</p>
+          <p><strong>Привод:</strong> ${car.Привод}</p>
+          <p><strong>Трансмиссия:</strong> ${car.Трансмиссия}</p>
+          <p><strong>Цена:</strong> ${car["Цена, руб."]} ₽</p>
+          <p><strong>Описание:</strong><br>${car.Описание || '—'}</p>
+          <a class="btn" href="https://t.me/newtimeauto_sales?text=Хочу забронировать: ${encodeURIComponent(car.Марка + " " + car.Модель + " (арт. " + car.ID + ")")}" target="_blank">Забронировать</a>
+          <a class="btn" href="https://t.me/newtimeauto_sales?text=Здравствуйте! Интересует: ${encodeURIComponent(car.Марка + " " + car.Модель + " (арт. " + car.ID + ")")}" target="_blank">Написать</a>
+          <a class="btn" href="tel:+79512310445">Позвонить</a>
+          <a class="btn" href="https://t.me/share/url?url=${encodeURIComponent('https://t.me/newtimeauto_bot/app?startapp=id_' + car.ID)}&text=${encodeURIComponent('Смотри, что нашёл в каталоге NewTimeAuto: ' + car.Марка + ' ' + car.Модель)}" target="_blank">🔗 Поделиться</a>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
+    // Закрытие по фону
+    document.addEventListener("click", e => {
+      const modal = document.querySelector(".modal");
+      if (modal && e.target === modal) modal.remove();
+    });
+
+    // Закрытие по Escape
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape") document.querySelector(".modal")?.remove();
+    });
+
+    function applyStartParam() {
+      const startId = tg?.initDataUnsafe?.start_param?.replace("id_", "");
+      if (startId) {
+        const found = cars.find(c => c.ID === startId);
+        if (found) showModal(found);
+      }
+    }
+
+    loadData();
   </script>
 </body>
 </html>
