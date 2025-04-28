@@ -315,7 +315,7 @@
             <h2>Цена: ${car["Цена, руб."]} ₽</h2>
             <p>${car.Марка} ${car.Модель}</p>
             <a class="modal-btn" href="https://t.me/newtimeauto_sales?text=${encodeURIComponent('Хочу забронировать: ' + car.Марка + ' ' + car.Модель + ' (арт. ' + car.ID + ')')}" target="_blank">Забронировать</a>
-            <a class="modal-btn" href="tel:+79512310445">Позвонить</a>
+            <!-- <a class="modal-btn" href="tel:+79512310445">Позвонить</a> -->
             <a class="modal-btn" href="https://t.me/share/url?url=${encodeURIComponent('https://t.me/newtimeauto_bot/app?startapp=id_' + car.ID)}&text=${encodeURIComponent('Смотри, что нашёл в каталоге NewTimeAuto: ' + car.Марка + ' ' + car.Модель)}" target="_blank">Поделиться</a>
             <h2>Характеристики</h2>
             <p><strong>Год:</strong> ${car.Год}</p>
