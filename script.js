@@ -12,7 +12,7 @@ function loadData() {
     }).then(function () {
         return gapi.client.sheets.spreadsheets.values.get({
             spreadsheetId: SPREADSHEET_ID,
-            range: 'Наличие!A2:K',  // Убедитесь, что диапазон правильный
+            range: 'Наличие!A2:J',  // Убедитесь, что диапазон правильный
         });
     }).then(function (response) {
         const data = response.result.values;
@@ -28,7 +28,6 @@ function loadData() {
                 transmission: row[6],
                 price: row[7],
                 description: row[8],
-                carid: row[9],
             }));
             displayCars(cars); // Отображаем автомобили
         } else {
